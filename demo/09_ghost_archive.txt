@@ -1,0 +1,5 @@
+The spirits are silent. Nothing in my records speaks to that.
+
+  (model found no answer in the evidence)
+
+  gemma4:e4b: 12.6s, 1715 prompt / 14 output tokens

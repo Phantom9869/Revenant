@@ -1,0 +1,20 @@
+79cb03d Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Add resurrection log
+44cbe9d Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Label the docs with the package version
+2d2c9fc Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Declare the Python versions that actually pass
+d692df1 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Drop the dead Travis badge
+691a9fa Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Remove dead Travis CI config
+d80edd1 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Add GitHub Actions CI
+db2aedf Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Turn event_loop-dependent fixtures into async fixtures
+b0b7c6a Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Stop relying on asyncio.get_event_loop() to create loops
+020f65b Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Restore the original expectation in test_containing (192 -> 191)
+0cecd46 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Depend on lxml_html_clean
+
+ .github/workflows/ci.yml    |  23 ++++++
+ .travis.yml                 |  26 ------
+ README.rst                  |   3 -
+ RESURRECTION_LOG.md         | 189 ++++++++++++++++++++++++++++++++++++++++++++
+ docs/source/conf.py         |   2 +-
+ requests_html.py            |  28 ++++++-
+ setup.py                    |  10 ++-
+ tests/test_requests_html.py |   7 +-
+ 8 files changed, 250 insertions(+), 38 deletions(-)

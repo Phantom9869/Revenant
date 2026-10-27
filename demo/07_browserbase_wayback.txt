@@ -1,0 +1,17 @@
+latest snapshot: 2022-10-26 https://web.archive.org/web/20221026182615id_/https://html.python-requests.org/
+fetcher: browserbase
+fetch 1: 2699 chars in 2.1s (cache hits 0, misses 1)
+fetch 2: 2699 chars in 0.0s (cache hits 1, misses 1)
+extracted text: 796 chars; first lines:
+English
+ Français
+ Deutsch
+ 日本語
+ 中文
+ Italiano
+ Español
+
+Domain Suspension
+
+Registrant Information Verification Failure
+

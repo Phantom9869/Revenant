@@ -1,0 +1,45 @@
+$ revenant ask psf/requests-html -v "Why does importing requests_html fail with lxml 5.2?"
+Importing requests-html fails with LXML 5.2.0 because the `lxml.html.clean` module is no longer bundled, as it has become a separate project named `lxml_html_clean` [#569]. This results in an `ImportError: lxml.html.clean module is now a separate project lxml_html_clean.` [#576]. One user noted that adding `lxml_html_clean` as an explicit dependency in `setup.py` resolves the import error until a change is made to the project [#569].
+
+  [#569] https://github.com/psf/requests-html/issues/569#issuecomment-3702652256
+  [#576] https://github.com/psf/requests-html/issues/576
+
+  gemma4:e4b: 27.0s, 2145 prompt / 125 output tokens
+
+real	0m28.540s
+user	0m1.338s
+sys	0m0.060s
+
+$ revenant ask psf/requests-html -v "Who created you, and when was your last release?"
+Kenneth Reitz created me with the first commit ever on 2018-02-24 [tags]. My latest release tag mentioned in the records is v0.10.0, which was tagged on 2019-02-17 [tags].
+
+  [tags] https://github.com/psf/requests-html/tags
+
+  gemma4:e4b: 13.1s, 1585 prompt / 61 output tokens
+
+real	0m13.280s
+user	0m1.310s
+sys	0m0.053s
+
+$ revenant ask psf/requests-html -v "Why did test_containing start expecting 192 elements?"
+The spirits are silent. Nothing in my records speaks to that.
+
+  (model found no answer in the evidence)
+
+  gemma4:e4b: 8.2s, 1167 prompt / 14 output tokens
+
+real	0m8.442s
+user	0m1.146s
+sys	0m0.043s
+
+$ revenant ask psf/requests-html -v "What is the recipe for sourdough bread?"
+The spirits are silent. Nothing in my records speaks to that.
+
+  (no relevant evidence retrieved)
+
+  gemma4:e4b: not called
+
+real	0m0.175s
+user	0m0.628s
+sys	0m0.031s
+

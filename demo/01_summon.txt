@@ -1,0 +1,26 @@
+Summoning psf/requests-html into /workspace/revenant/.revenant/psf__requests-html
+  repo                 1
+  issues             598
+  issue_comments    1296
+  review_comments     21
+  pulls              176
+  memory: +0 docs, {'comment': 1368, 'commit': 462, 'doc': 29, 'issue': 693, 'pr': 235, 'record': 2, 'review': 21}
+  embedded 0 docs with embeddinggemma in 0.0s
+{
+  "added": 0,
+  "counts": {
+    "comment": 1368,
+    "commit": 462,
+    "doc": 29,
+    "issue": 693,
+    "pr": 235,
+    "record": 2,
+    "review": 21
+  },
+  "embedded": 0,
+  "embed_seconds": 0.0
+}
+
+real	0m0.378s
+user	0m0.977s
+sys	0m0.144s

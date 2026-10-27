@@ -1,0 +1,9 @@
+# Real traces flushed to Sentry on 2026-10-27 around 23:40 IST (trace ids only; delivery confirmed only by the SDK reporting no send errors)
+ask (answered): fbc72b7b289946d2a3279ff922c46fc5
+ask (refused, no model call): [revenant] trace a2fba8b53e0f4b5a8fc872fa5b76a110 flushed to Sentry
+ask (answered): [revenant] trace 804b141cb08944b7b180086f27b9856c flushed to Sentry
+autopsy: [revenant] trace 739f5eefba46480ca1c9de47bbb4b465 flushed to Sentry
+resurrect (grimoire): [revenant] trace 81250614184341849a58c5b1442a6fad flushed to Sentry
+resurrect --no-grimoire (surgeon qwen2.5-coder:7b): [revenant] trace a1b57d34ed7a46f38d38f5ab490de398 flushed to Sentry
+autopsy (final demo run): f76e7a6f38104530846e06c0c5590c3a
+resurrect (final demo run, grimoire): cbea963c0576448a836a278575d2552f

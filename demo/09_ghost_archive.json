@@ -1,0 +1,25 @@
+{
+  "question": "According to the archived copy of html.python-requests.org from 2019, how do I install you and what was the documented version?",
+  "answer": "To install me, one should use the command `$ pipenv install requests-html` [archive:html.python-requests.org@2019-09-15]. My records do not specify a single documented version at that time, though one comment mentioned 0.9.0 as the current version on PyPI [archive:html.python-requests.org@2019-09-15].",
+  "refused": false,
+  "reason": "",
+  "sources": [
+    [
+      "archive:html.python-requests.org@2019-09-15",
+      "https://web.archive.org/web/20190915235734/http://html.python-requests.org:80/"
+    ]
+  ],
+  "stripped": [],
+  "model": "gemma4:e4b",
+  "seconds": 15.1,
+  "retrieved": [
+    "archive:html.python-requests.org@2019-09-15",
+    "#241",
+    "archive:html.python-requests.org@2019-09-15",
+    "#22",
+    "#88",
+    "#397",
+    "#221",
+    "#241"
+  ]
+}

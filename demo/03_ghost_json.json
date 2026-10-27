@@ -1,0 +1,29 @@
+{
+  "question": "How do I close an HTMLSession and the browser it started?",
+  "answer": "To close all windows, one must call `.session.close()` after rendering the page [#321]. For instance, after using `webpage.html.render()`, you should call `webpage.session.close()` [#321]. There was a mention of needing a handle to close the pyppeteer browser, which involved `browser.close()` [#165].",
+  "refused": false,
+  "reason": "",
+  "sources": [
+    [
+      "#321",
+      "https://github.com/psf/requests-html/issues/321#issuecomment-529166499"
+    ],
+    [
+      "#165",
+      "https://github.com/psf/requests-html/issues/165"
+    ]
+  ],
+  "stripped": [],
+  "model": "gemma4:e4b",
+  "seconds": 11.9,
+  "retrieved": [
+    "dd05a02",
+    "2d4c58d",
+    "#321",
+    "#586",
+    "#165",
+    "#199",
+    "#385",
+    "#242"
+  ]
+}

@@ -1,0 +1,27 @@
+Summoning psf/requests-html into /workspace/revenant/.revenant/psf__requests-html
+  repo                 1
+  issues             598
+  issue_comments    1296
+  review_comments     21
+  pulls              176
+  memory: +0 docs, {'comment': 1368, 'commit': 462, 'doc': 29, 'issue': 693, 'pr': 235, 'record': 2, 'review': 21}
+  embedded 0 docs with embeddinggemma in 0.0s
+  archived https://web.archive.org/web/20190915235734/http://html.python-requests.org:80/ as of 2019-09-15 via browserbase: 20 chunks, cited as [archive:html.python-requests.org@2019-09-15]
+{
+  "added": 0,
+  "counts": {
+    "comment": 1368,
+    "commit": 462,
+    "doc": 29,
+    "issue": 693,
+    "pr": 235,
+    "record": 2,
+    "review": 21
+  },
+  "embedded": 0,
+  "embed_seconds": 0.0
+}
+
+real	0m6.645s
+user	0m1.024s
+sys	0m0.056s
