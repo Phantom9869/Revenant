@@ -166,7 +166,37 @@ def cmd_resurrect(args):
                              for a in res.attempts]}
     (p.reports / f"resurrection{suffix}.json").write_text(json.dumps(timeline, indent=2, default=str))
     print(md)
-    print(f"\nRevived tree: {res.tree} (branch revenant/resurrection), {time.time() - t:.0f}s")
+    print(f"\nRevived tree: {res.tree} (branch revenant/resurrection), {wall:.0f}s")
+
+
+def cmd_export(args):
+    """Copy what the web UI needs (memory + reports) into a self-contained folder, e.g. to
+    deploy somewhere without a disk. Optionally drop the embedding vectors to save space."""
+    import shutil
+    import sqlite3
+    from pathlib import Path
+    p = Patient(parse_slug(args.repo))
+    if not p.db.exists():
+        sys.exit(f"No memory for {p.slug}. Run: revenant summon {p.slug}")
+    dest = Path(args.to).resolve() / p.root.name
+    (dest / "reports").mkdir(parents=True, exist_ok=True)
+    src = sqlite3.connect(p.db)
+    out = sqlite3.connect(dest / "ghost.db.tmp")
+    src.backup(out)
+    src.close()
+    if args.no_vectors:
+        out.execute("DELETE FROM vectors")
+        out.commit()
+        out.execute("VACUUM")
+    out.close()
+    (dest / "ghost.db.tmp").replace(dest / "ghost.db")
+    copied = []
+    for name in ("autopsy.json", "death_certificate.md", "RESURRECTION_LOG.md", "resurrection.json"):
+        if (p.reports / name).exists():
+            shutil.copy2(p.reports / name, dest / "reports" / name)
+            copied.append(name)
+    size = (dest / "ghost.db").stat().st_size / 1e6
+    print(f"exported {p.slug} to {dest}: ghost.db ({size:.1f} MB{', no vectors' if args.no_vectors else ''}), {', '.join(copied)}")
 
 
 def cmd_serve(args):
@@ -212,6 +242,12 @@ def main(argv=None):
     s.add_argument("--no-aftercare", action="store_true")
     s.add_argument("--name", default="fork", help="working tree name under the patient folder")
     s.set_defaults(fn=cmd_resurrect)
+
+    s = sub.add_parser("export", help="copy a patient's memory and reports into a folder (for deploying the web UI)")
+    s.add_argument("repo")
+    s.add_argument("--to", required=True, metavar="DIR", help="folder to use as REVENANT_HOME on the server")
+    s.add_argument("--no-vectors", action="store_true", help="drop embeddings (the server will use keyword retrieval)")
+    s.set_defaults(fn=cmd_export)
 
     s = sub.add_parser("serve", help="small web UI for summoned patients")
     s.add_argument("--host", default="127.0.0.1")

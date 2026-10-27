@@ -1,26 +1,27 @@
-# Render blueprint for the web UI. The ghost needs a chat model and embeddings:
-# point OLLAMA_HOST at a reachable Ollama server, or set REVENANT_GHOST_MODEL to
-# "backboard:<provider>/<model>" with BACKBOARD_API_KEY (retrieval then falls back
-# to keyword search if no embedding server is reachable).
+# Render blueprint for the Revenant web UI on Render's free tier.
+#
+# The free tier has no persistent disk and no GPU, so the deployed site is read-only:
+# it serves a bundle exported with `revenant export` (deploy/bundle/, committed to the
+# repo), the ghost talks to a hosted open-weight model through Backboard, and retrieval
+# is keyword search (SQLite FTS5) because there is no embedding server. See DEPLOY.md.
 services:
   - type: web
-    name: revenant
+    name: Revenant
     runtime: python
-    buildCommand: pip install .
+    plan: free
+    buildCommand: pip install ".[sentry]"
     startCommand: revenant serve --host 0.0.0.0
     healthCheckPath: /healthz
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.1
       - key: REVENANT_HOME
-        value: /var/data/revenant
-      - key: OLLAMA_HOST
-        sync: false
+        value: deploy/bundle
+      - key: REVENANT_EMBED_MODEL
+        value: none
       - key: REVENANT_GHOST_MODEL
-        sync: false
+        value: backboard:openrouter/dots-studio/dots-3-note-preview:free
       - key: BACKBOARD_API_KEY
         sync: false
       - key: SENTRY_DSN
         sync: false
-    disk:
-      name: revenant-data
-      mountPath: /var/data
-      sizeGB: 1
