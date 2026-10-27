@@ -1,19 +1,19 @@
-[revenant] trace cbea963c0576448a836a278575d2552f flushed to Sentry
-[revenant] initial: {'passed': 0, 'failed': 0, 'error': 2, 'skipped': 0}
-[revenant] lxml-html-clean: kept (passing 0 -> 24, failing 2 -> 6) -> {'passed': 24, 'failed': 3, 'error': 3, 'skipped': 0}
-[revenant] pytest-asyncio-event-loop: reverted (regressed 3 passing test(s): test_bare_render, test_browser_process, test_render) -> {'passed': 24, 'failed': 6, 'error': 0, 'skipped': 0}
-[revenant] history-assertion:test_containing: kept (passing 24 -> 25, failing 6 -> 5) -> {'passed': 25, 'failed': 2, 'error': 3, 'skipped': 0}
-[revenant] asyncio-loop: kept (passing 25 -> 27, failing 5 -> 3) -> {'passed': 27, 'failed': 0, 'error': 3, 'skipped': 0}
-[revenant] pytest-asyncio-event-loop: kept (passing 27 -> 30, failing 3 -> 0) -> {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0}
-[revenant] python 3.9: {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0, 'ok': True}
-[revenant] python 3.10: {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0, 'ok': True}
-[revenant] python 3.11: {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0, 'ok': True}
-[revenant] python 3.12: {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0, 'ok': True}
-[revenant] python 3.13: {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0, 'ok': True}
-[revenant] aftercare: Add GitHub Actions CI (d80edd1)
-[revenant] aftercare: Drop the dead Travis badge (d692df1)
-[revenant] aftercare: Declare the Python versions that actually pass (2d2c9fc)
-[revenant] aftercare: Label the docs with the package version (44cbe9d)
+$ revenant resurrect psf/requests-html
+[Revenant] initial: {'passed': 0, 'failed': 0, 'error': 2, 'skipped': 0}
+[Revenant] lxml-html-clean: kept (passing 0 -> 24, failing 2 -> 6) -> {'passed': 24, 'failed': 3, 'error': 3, 'skipped': 0}
+[Revenant] pytest-asyncio-event-loop: reverted (regressed 3 passing test(s): test_bare_render, test_browser_process, test_render) -> {'passed': 24, 'failed': 6, 'error': 0, 'skipped': 0}
+[Revenant] history-assertion:test_containing: kept (passing 24 -> 25, failing 6 -> 5) -> {'passed': 25, 'failed': 2, 'error': 3, 'skipped': 0}
+[Revenant] asyncio-loop: kept (passing 25 -> 27, failing 5 -> 3) -> {'passed': 27, 'failed': 0, 'error': 3, 'skipped': 0}
+[Revenant] pytest-asyncio-event-loop: kept (passing 27 -> 30, failing 3 -> 0) -> {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0}
+[Revenant] python 3.9: {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0, 'ok': True}
+[Revenant] python 3.10: {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0, 'ok': True}
+[Revenant] python 3.11: {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0, 'ok': True}
+[Revenant] python 3.12: {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0, 'ok': True}
+[Revenant] python 3.13: {'passed': 30, 'failed': 0, 'error': 0, 'skipped': 0, 'ok': True}
+[Revenant] aftercare: Add GitHub Actions CI (365e686)
+[Revenant] aftercare: Drop the dead Travis badge (53785ea)
+[Revenant] aftercare: Declare the Python versions that actually pass (aed8981)
+[Revenant] aftercare: Label the docs with the package version (2cdca71)
 # Resurrection log: psf/requests-html
 
 *2026-10-27, branch `revenant/resurrection` of a local clone. Every change below was applied as an exact text edit, followed by a full re-run of the project's own offline test suite in a network-less sandbox. Changes that did not help, or broke a passing test, were reverted.*
@@ -29,7 +29,7 @@
 
 - **Source:** grimoire
 - **Why:** lxml>=5.2 only re-exports lxml.html.clean when the separate lxml_html_clean package is installed, so declaring it restores the import without pinning an old lxml.
-- **Verdict:** passing 0 -> 24, failing 2 -> 6, committed as `0cecd46`
+- **Verdict:** passing 0 -> 24, failing 2 -> 6, committed as `0e97c6d`
 
 ```diff
 --- a/setup.py
@@ -80,7 +80,7 @@
 - **Source:** history
 - **Why:** The test now observes 191. The project's own history asserted 191 first (commit c7d07a0, 2018-03-03, Kenneth Reitz, "containing test"); commit 3348215 (2018-09-18, Ordanis Sanchez, "Fix tests") changed it to 192.
 - **History cited:** [`c7d07a0`](https://github.com/psf/requests-html/commit/c7d07a0), [`3348215`](https://github.com/psf/requests-html/commit/3348215)
-- **Verdict:** passing 24 -> 25, failing 6 -> 5, committed as `020f65b`
+- **Verdict:** passing 24 -> 25, failing 6 -> 5, committed as `ade2ff0`
 
 ```diff
 --- a/tests/test_requests_html.py
@@ -100,7 +100,7 @@
 
 - **Source:** grimoire
 - **Why:** Replace implicit loop creation with a helper that uses the running loop, else the thread's loop, else creates and sets a new one.
-- **Verdict:** passing 25 -> 27, failing 5 -> 3, committed as `b0b7c6a`
+- **Verdict:** passing 25 -> 27, failing 5 -> 3, committed as `da925d5`
 
 ```diff
 --- a/requests_html.py
@@ -160,7 +160,7 @@
 
 - **Source:** grimoire
 - **Why:** pytest-asyncio 1.0 removed the event_loop fixture. An async fixture is created inside the running test loop, which is what requesting event_loop used to guarantee.
-- **Verdict:** passing 27 -> 30, failing 3 -> 0, committed as `db2aedf`
+- **Verdict:** passing 27 -> 30, failing 3 -> 0, committed as `978e99d`
 
 ```diff
 --- a/tests/test_requests_html.py
@@ -198,15 +198,19 @@
 
 ## Aftercare
 
-- `d80edd1` Add GitHub Actions CI
-- `691a9fa` Remove dead Travis CI config
-- `d692df1` Drop the dead Travis badge
-- `2d2c9fc` Declare the Python versions that actually pass
-- `44cbe9d` Label the docs with the package version
+- `365e686` Add GitHub Actions CI
+- `ffdd192` Remove dead Travis CI config
+- `53785ea` Drop the dead Travis badge
+- `aed8981` Declare the Python versions that actually pass
+- `2cdca71` Label the docs with the package version
+
+## Surgeon usage (as reported by the model server)
+
+| model | calls | input tokens | output tokens | model time | cost |
+|---|---|---|---|---|---|
+| `qwen2.5-coder:7b` | 0 | 0 | 0 | 0.0s | not reported |
 
 
-Revived tree: /workspace/revenant/.revenant/psf__requests-html/fork (branch revenant/resurrection), 56s
+Revived tree: /workspace/revenant/.revenant/psf__requests-html/fork (branch revenant/resurrection), 76s
+[Revenant] trace 86832758635745d7aa9b64b1dfb8dbb5 flushed to Sentry
 
-real	0m56.129s
-user	0m28.793s
-sys	0m7.722s

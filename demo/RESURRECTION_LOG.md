@@ -13,7 +13,7 @@
 
 - **Source:** grimoire
 - **Why:** lxml>=5.2 only re-exports lxml.html.clean when the separate lxml_html_clean package is installed, so declaring it restores the import without pinning an old lxml.
-- **Verdict:** passing 0 -> 24, failing 2 -> 6, committed as `0cecd46`
+- **Verdict:** passing 0 -> 24, failing 2 -> 6, committed as `0e97c6d`
 
 ```diff
 --- a/setup.py
@@ -64,7 +64,7 @@
 - **Source:** history
 - **Why:** The test now observes 191. The project's own history asserted 191 first (commit c7d07a0, 2018-03-03, Kenneth Reitz, "containing test"); commit 3348215 (2018-09-18, Ordanis Sanchez, "Fix tests") changed it to 192.
 - **History cited:** [`c7d07a0`](https://github.com/psf/requests-html/commit/c7d07a0), [`3348215`](https://github.com/psf/requests-html/commit/3348215)
-- **Verdict:** passing 24 -> 25, failing 6 -> 5, committed as `020f65b`
+- **Verdict:** passing 24 -> 25, failing 6 -> 5, committed as `ade2ff0`
 
 ```diff
 --- a/tests/test_requests_html.py
@@ -84,7 +84,7 @@
 
 - **Source:** grimoire
 - **Why:** Replace implicit loop creation with a helper that uses the running loop, else the thread's loop, else creates and sets a new one.
-- **Verdict:** passing 25 -> 27, failing 5 -> 3, committed as `b0b7c6a`
+- **Verdict:** passing 25 -> 27, failing 5 -> 3, committed as `da925d5`
 
 ```diff
 --- a/requests_html.py
@@ -144,7 +144,7 @@
 
 - **Source:** grimoire
 - **Why:** pytest-asyncio 1.0 removed the event_loop fixture. An async fixture is created inside the running test loop, which is what requesting event_loop used to guarantee.
-- **Verdict:** passing 27 -> 30, failing 3 -> 0, committed as `db2aedf`
+- **Verdict:** passing 27 -> 30, failing 3 -> 0, committed as `978e99d`
 
 ```diff
 --- a/tests/test_requests_html.py
@@ -182,8 +182,14 @@
 
 ## Aftercare
 
-- `d80edd1` Add GitHub Actions CI
-- `691a9fa` Remove dead Travis CI config
-- `d692df1` Drop the dead Travis badge
-- `2d2c9fc` Declare the Python versions that actually pass
-- `44cbe9d` Label the docs with the package version
+- `365e686` Add GitHub Actions CI
+- `ffdd192` Remove dead Travis CI config
+- `53785ea` Drop the dead Travis badge
+- `aed8981` Declare the Python versions that actually pass
+- `2cdca71` Label the docs with the package version
+
+## Surgeon usage (as reported by the model server)
+
+| model | calls | input tokens | output tokens | model time | cost |
+|---|---|---|---|---|---|
+| `qwen2.5-coder:7b` | 0 | 0 | 0 | 0.0s | not reported |

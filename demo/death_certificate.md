@@ -42,7 +42,7 @@ lxml 5.2.0 (2024) moved lxml.html.clean into the separate lxml_html_clean packag
 | sign | status | detail |
 |---|---|---|
 | CI: .travis.yml | **dead** | Travis CI's free travis-ci.org service shut down in 2021; this config no longer runs anywhere. |
-| Docs/site: html.python-requests.org | **dead** | URLError: <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] ssl/tls alert handshake failure (_ssl.c:1029)>. DNS: readthedocs.io -> 104.16.254.120 -> 104.16.253.120. Last archived snapshot: 2022-10-26 http://web.archive.org/web/20221026182615/https://html.python-requests.org/ |
+| Docs/site: html.python-requests.org | **dead** | URLError: <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] ssl/tls alert handshake failure (_ssl.c:1029)>. DNS: readthedocs.io -> 104.16.253.120 -> 104.16.254.120. Last archived snapshot: 2022-10-26 http://web.archive.org/web/20221026182615/https://html.python-requests.org/ |
 | Docs/site: kennethreitz.com | **alive** | HTTP 200, title: kennethreitz.com |
 | Docs/site: requests-html.kennethreitz.org (linked 8x in the tracker) | **stale** | HTTP 200, but the page is titled v0.3.4 while the latest release is 0.10.0 (title: Requests-HTML: HTML Parsing for Humans (writing Python 3)! — requests-HTML v0.3.4 documentation). The Sphinx config still says `release = 'v0.3.4'` (docs/source/conf.py) |
 | PyPI | **stale** | latest release requests-html 0.10.0 on 2019-02-17; requires_python: >=3.6.0 |

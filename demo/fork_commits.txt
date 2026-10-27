@@ -1,20 +1,20 @@
-79cb03d Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Add resurrection log
-44cbe9d Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Label the docs with the package version
-2d2c9fc Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Declare the Python versions that actually pass
-d692df1 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Drop the dead Travis badge
-691a9fa Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Remove dead Travis CI config
-d80edd1 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Add GitHub Actions CI
-db2aedf Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Turn event_loop-dependent fixtures into async fixtures
-b0b7c6a Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Stop relying on asyncio.get_event_loop() to create loops
-020f65b Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Restore the original expectation in test_containing (192 -> 191)
-0cecd46 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Depend on lxml_html_clean
-
- .github/workflows/ci.yml    |  23 ++++++
- .travis.yml                 |  26 ------
- README.rst                  |   3 -
- RESURRECTION_LOG.md         | 189 ++++++++++++++++++++++++++++++++++++++++++++
- docs/source/conf.py         |   2 +-
- requests_html.py            |  28 ++++++-
- setup.py                    |  10 ++-
- tests/test_requests_html.py |   7 +-
- 8 files changed, 250 insertions(+), 38 deletions(-)
+f1cfe46 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Add resurrection log
+2cdca71 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Label the docs with the package version
+aed8981 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Declare the Python versions that actually pass
+53785ea Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Drop the dead Travis badge
+ffdd192 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Remove dead Travis CI config
+365e686 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Add GitHub Actions CI
+978e99d Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Turn event_loop-dependent fixtures into async fixtures
+da925d5 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Stop relying on asyncio.get_event_loop() to create loops
+ade2ff0 Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Restore the original expectation in test_containing (192 -> 191)
+0e97c6d Phantom9869 <145986653+Phantom9869@users.noreply.github.com> Depend on lxml_html_clean
+075ac16 surister <surister98@gmail.com> Merge pull request #539 from Skaylan/fix-typo
+1d19c76 surister <surister98@gmail.com> Merge pull request #536 from clach04/patch-1
+efb2484 Lucas Gomes <lucas_7tv@hotmail.com> fix typo at docs
+ed77e8c clach04 <clach04@gmail.com> Update README.rst
+87a047d surister <surister98@gmail.com> Merge pull request #485 from python-pitfalls/master
+9542dc0 surister <surister98@gmail.com> Merge pull request #516 from timgates42/bugfix_typos
+4264c5d surister <surister98@gmail.com> Merge pull request #534 from surister/versions_test_fixes
+bd8355a surister <surister98@gmail.com> Minor refactoring, typo fixes.
+1786eb6 surister <surister98@gmail.com> Fix broken tests, add more cases, refactor tests to allow more cases.
+3375831 Tim Gates <tim.gates@iress.com> docs: Fix a few typos
