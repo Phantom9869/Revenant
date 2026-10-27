@@ -292,7 +292,7 @@ revenant ask  [cli]  5.47s
 - Browserbase: one real Wayback fetch through the Fetch API, cached; archived docs ingested and cited by the ghost
 - Sentry: real traces sent from `ask`, `autopsy` and `resurrect`; the span tree captured locally; span structure covered by an offline test
 - web UI against real data, and the Render configuration run locally (bundle, keyword retrieval, ghost on Backboard, `$PORT`)
-- 80 unit tests (`pytest`, output in [`demo/12_revenant_tests.txt`](demo/12_revenant_tests.txt))
+- 81 unit tests (`pytest`, output in [`demo/12_revenant_tests.txt`](demo/12_revenant_tests.txt))
 
 **Implemented but untested:**
 
