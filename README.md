@@ -19,7 +19,11 @@ The first patient is [`psf/requests-html`](https://github.com/psf/requests-html)
 | CI | `.travis.yml` (travis-ci.org shut down in 2021) | GitHub Actions workflow, weekly cron |
 | docs site | `html.python-requests.org`: TLS failure; Wayback shows "Domain Suspension" by 2022-10-26 | archived 2019 docs ingested into the ghost's memory |
 
-All numbers in this README come from runs saved under [`demo/`](demo/).
+All numbers in this README come from runs saved under [`demo/`](demo/). The screenshots in
+[`docs/`](docs/) were taken with headless Chromium by
+[`scripts/screenshots.py`](scripts/screenshots.py), from the running web UI and those outputs.
+
+![The Revenant web UI: the overview of psf/requests-html](docs/web-overview.png)
 
 ## The three rites
 
@@ -48,11 +52,16 @@ otherwise), cached on disk so every page is fetched once, and becomes citable as
 
 ```
 $ revenant ask psf/requests-html -v "Why does importing requests_html fail with lxml 5.2?"
-Importing requests-html fails with LXML 5.2.0 because the `lxml.html.clean` module is no longer
-bundled, as it has become a separate project named `lxml_html_clean` [#569]. ...
+Importing requests-html fails because the `lxml.html.clean` module is now a separate project
+called `lxml_html_clean` [#569]. This causes an `ImportError` when attempting to import `Cleaner`
+from `lxml.html.clean` [#576]. ...
 
   [#569] https://github.com/psf/requests-html/issues/569#issuecomment-3702652256
   [#576] https://github.com/psf/requests-html/issues/576
+
+  citation check: 4/4 cited sentence(s) supported by their sources
+
+  gemma4:e4b: 7.2s, 2145 prompt / 117 output tokens
 ```
 
 The ghost is **Gemma 4 E4B** (via Ollama, thinking off), answering in first person from its own
@@ -61,8 +70,40 @@ history. It follows strict rules:
 - Retrieval is hybrid (BM25 + EmbeddingGemma cosine, fused with reciprocal rank fusion).
 - If nothing relevant is retrieved (max cosine < 0.30), it refuses **without calling the model**:
   *"The spirits are silent. Nothing in my records speaks to that."*
-- Every citation in the answer is checked against the evidence actually retrieved. Invented refs are
-  stripped, and an answer with no verifiable citation left becomes a refusal.
+- Every citation must name a record that was actually retrieved. Invented refs are stripped.
+- Every cited sentence is then checked against the text of the records it cites (below).
+  Unsupported citations are removed, sentences with no supporting record are withheld, and an
+  answer with nothing supported left becomes a refusal.
+
+`--model backboard:<provider>/<model>` gives the ghost a hosted voice instead
+([`demo/17_ghost_backboard.txt`](demo/17_ghost_backboard.txt): Dots3-Note Preview, 3/3 and 2/2
+sentences supported, about 20 s and a reported $0 per answer).
+
+#### The citation check
+
+[`revenant/citecheck.py`](revenant/citecheck.py) splits the answer into sentences and keeps
+trailing citations with the sentence they follow. A sentence counts as supported by a cited
+record when:
+
+- every **hard detail** in it appears verbatim in one of its cited records: version numbers, dates,
+  years, SHAs, issue numbers, `code spans`, quoted text and dotted, underscored or camelCase
+  identifiers (the project's own name excepted), **and**
+- that record shares at least half of the sentence's content words (after light stemming), or a
+  third of them if the record also carries one of the sentence's hard details, or the sentence is
+  little more than that detail.
+
+The check is lexical. It uses no model and is covered by 13 tests. It is strict on purpose, so it
+has false negatives. A sentence about 0.9.0 that was probably fine was withheld because only 20%
+of its other words were in the record it cited
+([`demo/09_ghost_archive.NOTE.md`](demo/09_ghost_archive.NOTE.md)). It cannot judge paraphrase or
+negation either: "My records do not hold information on whether this approach is acceptable [#569]"
+passes. The answers saved before the check existed are in
+[`demo/before_support_check/`](demo/before_support_check/), and
+[`demo/16_recheck_saved_answers.txt`](demo/16_recheck_saved_answers.txt) replays them through it.
+In the old archive answer, it removes the one sentence that credits "0.9.0" to the archived
+docs, which don't contain it.
+
+![A ghost answer with its sources and per-sentence verdicts](docs/web-ask.png)
 
 ### 3. Autopsy and resurrection
 
@@ -91,6 +132,13 @@ The **resurrection** loop:
 
 Everything is logged to [`RESURRECTION_LOG.md`](demo/RESURRECTION_LOG.md), with diffs and verdicts,
 including what was reverted.
+
+![Terminal: the resurrection of requests-html, 0 to 30 passing](docs/term-resurrect.png)
+
+The autopsy's terminal output is in [`docs/term-autopsy.png`](docs/term-autopsy.png), and the web
+UI's certificate and resurrection timeline are in
+[`docs/web-certificate.png`](docs/web-certificate.png) and
+[`docs/web-resurrection.png`](docs/web-resurrection.png).
 
 ## What killed requests-html
 
@@ -121,20 +169,34 @@ run alone, made the same one-character change, but with no evidence for it. Comp
 [`demo/RESURRECTION_LOG.md`](demo/RESURRECTION_LOG.md) with
 [`demo/RESURRECTION_LOG_surgeon_only.md`](demo/RESURRECTION_LOG_surgeon_only.md).
 
-## Grimoire vs. surgeon (Qwen2.5-Coder 7B alone)
+## Head-to-head: grimoire vs. local and hosted open-weight surgeons
 
-Same patient, same sandbox, same judge, `--no-grimoire`:
+Same patient, same sandbox, same judge. The code models ran with `--no-grimoire`, so every edit
+came from them. Tokens, time and cost are as reported by Ollama and Backboard. Details, caveats and
+the full logs are in [`demo/14_head_to_head.md`](demo/14_head_to_head.md).
 
-| | grimoire + surgeon | surgeon only |
-|---|---|---|
-| result | 30 passed, 0 failed | 25 passed, 2 failed, 3 errors |
-| kept edits | 4 | 2 (lxml dependency, 192→191) |
-| asyncio loop / fixture breakage | fixed | not fixed |
-| bad edits caught | 1 reverted (regression), later re-tried and kept | 2 unappliable (SEARCH text not in the file); 2 reverted for regressions, one of which broke the import and all 25 passing tests; 2 reverted for no improvement |
+| contender | passing (of 30) | kept / reverted / unappliable | model calls | tokens in / out | model time | cost reported |
+|---|---|---|---|---|---|---|
+| grimoire only (no model) | **30** | 4 / 1 / 0 | 0 | – | 0 s (24.6 s wall) | – |
+| Qwen2.5-Coder 7B, local (Ollama, CPU) | **25** | 2 / 2 / 3 | 10 | 8,902 / 852 | 141.6 s | n/a (local) |
+| Dots3-Note Preview 280B-A16B, via Backboard | **27** | 3 / 6 / 0 | 10 | 7,856 / 44,501 | 532.7 s | $0.0000 |
+| Flint v1.0 40B-A2.5B, via Backboard | **27** | 3 / 6 / 0 | 9 | 6,901 / 63,458 | 683.7 s | $0.0000 |
 
-A 7B model on a CPU can fix a well-described ImportError. Here it could not untangle the
-event-loop changes. The exact-match edit format and the regression guard kept its bad ideas out of
-the tree.
+- Every contender fixed the lxml import (0 → 24) and restored 191 in `test_containing` (→ 25).
+  Only the grimoire cites the history behind 191 (below).
+- Only the two hosted models also fixed the event-loop breakage in `HTMLSession.browser` (→ 27).
+- No model fixed the removed pytest-asyncio `event_loop` fixture, so three async tests still error.
+  The grimoire's cure did.
+- The regression guard caught real damage: one Flint edit and one Qwen edit each regressed every
+  passing test, and both were reverted.
+
+Both hosted models are open-weight according to Backboard's own `/models` listing, and both ran on
+its $0 tier. Larger paid open-weight coders such as `qwen/qwen3-coder` ($0.30 / $1.00 per 1M
+tokens in Backboard's listing) were not tried. This account's free credit covers Backboard's
+memory and RAG, not LLM chat ([`demo/13_backboard_probe.txt`](demo/13_backboard_probe.txt)).
+
+The first pass also compared the grimoire against Qwen alone:
+[`demo/RESURRECTION_LOG_surgeon_only.md`](demo/RESURRECTION_LOG_surgeon_only.md).
 
 ## Install
 
@@ -154,8 +216,34 @@ revenant summon psf/requests-html
 ```
 
 Data goes to `$REVENANT_HOME` (default `./.revenant`). Commits in the revived fork use
-`REVENANT_GIT_NAME` / `REVENANT_GIT_EMAIL` when set. `revenant serve` starts a small web UI with
-the certificate, the resurrection log and an ask box (JSON API: `POST /p/<owner>/<repo>/ask`).
+`REVENANT_GIT_NAME` / `REVENANT_GIT_EMAIL` when set.
+
+## Web UI
+
+```
+revenant serve --port 8765
+```
+
+A dark, quiet séance room. It has a home page listing the summoned patients, and for each patient
+an overview, the death certificate, the resurrection timeline (each operation with its verdict
+and test counts, then the Python matrix and aftercare) and an ask box. Answers show their sources
+and each sentence's verdict. The JSON API is `POST /p/<owner>/<repo>/ask` with `{"q": "..."}`
+([`demo/10_web.txt`](demo/10_web.txt)). It uses the standard library only.
+
+| | |
+|---|---|
+| ![home](docs/web-home.png) | ![certificate](docs/web-certificate.png) |
+| ![resurrection timeline](docs/web-resurrection.png) | ![ask](docs/web-ask.png) |
+
+### Deploying on Render (free tier)
+
+[`render.yaml`](render.yaml) is a Render blueprint for one free web service named `Revenant`.
+The free tier has no disk and no GPU, so the deployed site is read-only. It serves a bundle made
+with `revenant export psf/requests-html --to deploy/bundle --no-vectors` (committed, 5.2 MB),
+the ghost runs on Backboard, and retrieval is keyword-only. `BACKBOARD_API_KEY` (and optionally
+`SENTRY_DSN`) are set as Render environment variables, never in the repo. The server binds to
+`$PORT`. Steps and trade-offs are in [`DEPLOY.md`](DEPLOY.md), and a local run of exactly this
+configuration is in [`demo/18_render_config.txt`](demo/18_render_config.txt).
 
 ## Partners (optional, all behind environment variables)
 
@@ -163,47 +251,59 @@ the certificate, the resurrection log and an ask box (JSON API: `POST /p/<owner>
 |---|---|
 | `BROWSERBASE_API_KEY` | Wayback snapshots fetched through the Browserbase Fetch API (proxied for web.archive.org), cached on disk |
 | `SENTRY_DSN` (+ `pip install '.[sentry]'`) | traces for every command, using Sentry's AI agent conventions (below) |
-| `BACKBOARD_API_KEY` | `--model backboard:<provider>/<model>` voices the ghost through Backboard instead of Ollama |
-| `render.yaml` | Render blueprint for the web UI (health check, persistent disk) |
+| `BACKBOARD_API_KEY` | `ask --model backboard:<provider>/<model>` and `resurrect --surgeon backboard:<provider>/<model>`: hosted models through Backboard's `/threads/messages` (memory off), with token counts and reported cost |
+| `render.yaml` | Render blueprint for the web UI (see above) |
 
-Sentry span tree (prompt and answer text only with `REVENANT_TRACE_CONTENT=1`):
+Backboard's memory and RAG features are not used. The ghost already has its own retrieval and
+citation check, built on records it can link and quote, so a second hosted memory would add
+nothing it could cite.
+
+Sentry span tree (prompt and answer text only with `REVENANT_TRACE_CONTENT=1`). Real traces were
+sent from `ask`, `autopsy` and `resurrect` ([`demo/11_sentry_traces.txt`](demo/11_sentry_traces.txt)
+has the trace ids). There is no Sentry API or UI access from the dev box, so the picture below is
+**not the Sentry UI**. It is the same spans captured locally with an in-process transport
+([`demo/investigations/span_tree.py`](demo/investigations/span_tree.py),
+[`demo/15_span_tree_local.txt`](demo/15_span_tree_local.txt)):
 
 ```
-revenant ask | autopsy | resurrect          transaction
-└── invoke_agent ghost | resurrectionist | surgeon
-    ├── search_memory                        gen_ai.memory.client (records, max cosine)
-    ├── chat gemma4:e4b | qwen2.5-coder:7b   gen_ai.chat (input/output/total tokens, latency)
-    └── execute_tool run_tests | apply_fix | fetch_archive
+revenant ask  [cli]  5.47s
+└── invoke_agent ghost  [gen_ai.invoke_agent]  5.43s  revenant.citations=#569,#576
+    ├── search_memory  [gen_ai.memory.client]  0.10s  gen_ai.memory.record.count=8, revenant.max_cosine=0.674
+    │   └── POST http://localhost:11434/api/embed  [http.client]  0.05s
+    ├── chat gemma4:e4b  [gen_ai.chat]  5.33s  input_tokens=2145, output_tokens=114
+    │   └── POST http://localhost:11434/api/chat  [http.client]  5.33s
+    └── verify_citations  [revenant.verify_citations]  0.00s  revenant.claims=4, revenant.claims_withheld=0
 ```
+
+![Span tree captured locally (not the Sentry UI)](docs/span-tree-local.png)
 
 ## Status
 
 **Verified** (run end to end on the dev box; outputs in `demo/`):
 
 - summon: GitHub harvest with cache, git history, SQLite + FTS5 + EmbeddingGemma index
-- ghost: cited answers, citation checking, refusals with and without a model call (CLI and web JSON API)
+- ghost: cited answers, the per-sentence citation check, refusals with and without a model call (CLI and web JSON API)
 - autopsy in a network-less bwrap sandbox; death certificate with causes, witnesses and vital signs
 - resurrection with the grimoire: 0 → 30 passing, with regression-guarded reverts, commits in a local fork
-- surgeon-only resurrection with Qwen2.5-Coder 7B (results above)
+- surgeon-only resurrections with Qwen2.5-Coder 7B (local) and two open-weight models on Backboard (the head-to-head above)
+- Backboard: model listing and prices from its API; the ghost and the surgeon on `dots-3-note-preview:free` and `flint-v1.0:free`
 - Python 3.9–3.13 matrix; aftercare edits (each re-verified by the test suite)
 - 191 vs 192 investigation
 - Browserbase: one real Wayback fetch through the Fetch API, cached; archived docs ingested and cited by the ghost
-- Sentry: real traces sent from `ask`, `autopsy` and `resurrect` (trace ids in `demo/11_sentry_traces.txt`);
-  span structure covered by an offline test
-- 64 unit tests (`pytest`, output in `demo/12_revenant_tests.txt`)
+- Sentry: real traces sent from `ask`, `autopsy` and `resurrect`; the span tree captured locally; span structure covered by an offline test
+- web UI against real data, and the Render configuration run locally (bundle, keyword retrieval, ghost on Backboard, `$PORT`)
+- 80 unit tests (`pytest`, output in [`demo/12_revenant_tests.txt`](demo/12_revenant_tests.txt))
 
 **Implemented but untested:**
 
-- Backboard as the ghost's voice (no API key yet)
-- Render deployment from `render.yaml`
+- The actual Render deployment from `render.yaml` (the service has not been created)
+- Paid Backboard models (the account has no chat credit)
 - The generated GitHub Actions workflow (written into the fork, never run; the fork was never pushed)
 - Patients other than requests-html
 
 **Planned:**
 
-- Per-sentence support checking for citations. Today the ghost checks that a cited ref was among the
-  retrieved evidence, not that it supports the sentence
-  (see [`demo/09_ghost_archive.NOTE.md`](demo/09_ghost_archive.NOTE.md)).
+- A citation check that understands paraphrase and negation (today's is lexical, see above)
 - More grimoire cures (`imp` and `distutils` removals are diagnosed but have no cure yet)
 - Opening the resurrection as a pull request, with the log as its description
 - Surgeon calls with more context (multiple files, retrieval from the ghost's memory)
@@ -213,6 +313,9 @@ revenant ask | autopsy | resurrect          transaction
 - All model timings are CPU-only (no GPU): EmbeddingGemma embedded 2,808 docs in about 157 s on the
   first summon, ghost answers take 6–28 s (the slow end includes model load), and surgeon calls
   take 7–25 s each (two surgeon-only runs).
+- Hosted calls ran on Backboard's free tier, which is rate-limited upstream: ghost answers took
+  about 20–55 s, and surgeon calls 53–76 s on average. Free preview models can disappear.
+- Each head-to-head contender ran once. Model output varies between runs.
 - The sandbox needs `bwrap`. Without it, tests run unsandboxed and the certificate says so.
 - Render tests need Chromium. Pyppeteer's Chromium must be downloaded before the sandboxed run,
   because the sandbox has no network.
@@ -225,12 +328,13 @@ revenant ask | autopsy | resurrect          transaction
 
 ```
 revenant/
-  cli.py              summon | ask | autopsy | resurrect | serve
+  cli.py              summon | ask | autopsy | resurrect | export | serve
   config.py           patient paths, model names
-  models.py           Ollama chat/embeddings, Backboard client
+  models.py           Ollama chat/embeddings, Backboard client (retries, usage metering)
   harvest/            GitHub API (cached, paged) and git history
   memory/             SQLite store, ingestion, hybrid retrieval
-  ghost.py            persona, refusals, citation checking
+  ghost.py            persona, refusals, citation filtering
+  citecheck.py        per-sentence citation support check
   sandbox.py          test plan detection, bwrap runner
   diagnose.py         junit parsing, causes of death
   vitals.py           CI, docs hosts, DNS, Wayback, PyPI
@@ -240,9 +344,13 @@ revenant/
   aftercare.py        Python matrix, CI, metadata
   report.py           resurrection log
   integrations/       Sentry tracing, Wayback + Browserbase
-  web/app.py          small stdlib web UI
+  web/app.py          stdlib web UI and JSON API
 tests/                unit tests
 demo/                 real outputs from the runs described above
+docs/                 screenshots (headless Chromium)
+scripts/              screenshots.py
+deploy/bundle/        exported patient data for the Render deploy
+render.yaml, DEPLOY.md  Render free-tier blueprint and notes
 ```
 
 ## License
