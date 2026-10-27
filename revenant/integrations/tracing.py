@@ -78,7 +78,7 @@ def transaction(name: str, op: str = "revenant"):
     with _sdk.start_transaction(op=op, name=name) as t:
         yield t
     import sys
-    print(f"[revenant] trace {t.trace_id} flushed to Sentry", file=sys.stderr)
+    print(f"[Revenant] trace {t.trace_id} flushed to Sentry", file=sys.stderr)
 
 
 def set_data(s, **data) -> None:

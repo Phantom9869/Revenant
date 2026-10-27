@@ -20,7 +20,7 @@ def verify_matrix(tree: Path, envroot: Path, pythons=CANDIDATE_PYTHONS, log=prin
             out[py] = dict(t, ok=t["passed"] > 0 and t["failed"] == 0 and t["error"] == 0)
         except RuntimeError as e:
             out[py] = {"ok": False, "error": str(e)[:300]}
-        log(f"[revenant] python {py}: {out[py]}")
+        log(f"[Revenant] python {py}: {out[py]}")
     return out
 
 
@@ -118,7 +118,7 @@ def run_aftercare(res, pythons=CANDIDATE_PYTHONS, log=print) -> list[str]:
             res.final = exam
         sha = commit(tree, title, body, paths=sorted({e.path for e in edits}))
         notes.append(f"`{sha}` {title}")
-        log(f"[revenant] aftercare: {title} ({sha})")
+        log(f"[Revenant] aftercare: {title} ({sha})")
 
     if ok:
         land("Add GitHub Actions CI", f"Runs the offline test suite on Python {', '.join(ok)}, the versions "

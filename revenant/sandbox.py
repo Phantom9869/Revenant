@@ -149,5 +149,5 @@ class Sandbox:
             rc, text = r.returncode, r.stdout + r.stderr
         except subprocess.TimeoutExpired as e:
             rc, text = -9, (e.stdout or b"").decode(errors="replace") if isinstance(e.stdout, bytes) else (e.stdout or "")
-            text += f"\n[revenant] test run timed out after {timeout}s"
+            text += f"\n[Revenant] test run timed out after {timeout}s"
         return RunResult(rc, time.time() - t, junit, text, cmd, sandboxed)

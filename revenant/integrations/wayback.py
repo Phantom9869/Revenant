@@ -14,7 +14,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Protocol
 
-UA = {"User-Agent": "revenant/0.1 (+https://github.com/Phantom9869/revenant)"}
+UA = {"User-Agent": "Revenant/0.1 (+https://github.com/Phantom9869/Revenant)"}
 
 
 @dataclass

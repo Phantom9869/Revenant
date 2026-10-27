@@ -144,7 +144,7 @@ def _resurrect(patient, use_grimoire, surgeon, python, max_rounds, surgeon_tries
     tree, workdir = start(patient, name)
     exam = examine(tree, workdir, python, reinstall=True, agent="resurrectionist")
     res = Resurrection(patient, tree, workdir, exam)
-    log(f"[revenant] initial: {exam.tally}")
+    log(f"[Revenant] initial: {exam.tally}")
     tried: set[str] = set()
     parked: set[str] = set()   # reverted cures; one more chance after something else is kept
     retried: set[str] = set()
@@ -158,7 +158,7 @@ def _resurrect(patient, use_grimoire, surgeon, python, max_rounds, surgeon_tries
                                  for o in exam.outcomes):
                 continue  # try the next failing test
         if not fixes:
-            log(f"[revenant] round {rnd}: nothing left to try")
+            log(f"[Revenant] round {rnd}: nothing left to try")
             break
         for fix in fixes:
             tried.add(fix.id)
@@ -169,7 +169,7 @@ def _resurrect(patient, use_grimoire, surgeon, python, max_rounds, surgeon_tries
                     diff = apply_fix(tree, fix)
                 except EditError as e:
                     res.attempts.append(Attempt(fix, "unappliable", exam.tally, None, reason=str(e)))
-                    log(f"[revenant] {fix.id}: unappliable ({e})")
+                    log(f"[Revenant] {fix.id}: unappliable ({e})")
                     tracing.tool_result(ts, {"verdict": "unappliable", "reason": str(e)})
                     continue
                 new = examine(tree, workdir, python, extra=fix.deps, agent="resurrectionist")
@@ -191,7 +191,7 @@ def _resurrect(patient, use_grimoire, surgeon, python, max_rounds, surgeon_tries
                 if fix.reinstall:
                     examine(tree, workdir, python)  # put the environment back too
             res.attempts.append(a)
-            log(f"[revenant] {fix.id}: {a.verdict} ({why}) -> {new.tally}")
+            log(f"[Revenant] {fix.id}: {a.verdict} ({why}) -> {new.tally}")
         if not (set(o.test for o in exam.outcomes if o.status in ("failed", "error"))):
             break
     res.final = exam

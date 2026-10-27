@@ -10,7 +10,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 
-UA = {"User-Agent": "revenant/0.1 (+https://github.com/Phantom9869/revenant)"}
+UA = {"User-Agent": "Revenant/0.1 (+https://github.com/Phantom9869/Revenant)"}
 
 DEAD_CI = {
     ".travis.yml": "Travis CI's free travis-ci.org service shut down in 2021; this config no longer runs anywhere.",

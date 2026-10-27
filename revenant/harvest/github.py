@@ -59,7 +59,7 @@ class GitHubClient:
             return blob["body"], blob.get("next")
         if self.remaining == 0:
             raise RateLimited(int(time.time()) + 3600)
-        headers = {"Accept": "application/vnd.github+json", "User-Agent": "revenant"}
+        headers = {"Accept": "application/vnd.github+json", "User-Agent": "Revenant"}
         if self.token:
             headers["Authorization"] = f"Bearer {self.token}"
         req = urllib.request.Request(url, headers=headers)

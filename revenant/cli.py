@@ -1,4 +1,4 @@
-"""revenant: summon the ghost of an abandoned repository, find out what killed it, bring it back."""
+"""Revenant: summon the ghost of an abandoned repository, find out what killed it, bring it back."""
 from __future__ import annotations
 
 import argparse
@@ -138,7 +138,7 @@ def main(argv=None):
     from .integrations import tracing
     tracing.init()
     ap = argparse.ArgumentParser(prog="revenant", description=__doc__)
-    ap.add_argument("--version", action="version", version=f"revenant {__version__}")
+    ap.add_argument("--version", action="version", version=f"Revenant {__version__}")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     s = sub.add_parser("summon", help="clone + harvest history + build the ghost's memory")
