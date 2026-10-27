@@ -1,0 +1,39 @@
+$ curl -s localhost:8765/healthz
+ok
+
+$ curl -s localhost:8765/ | grep -o "<a href=[^>]*>[^<]*</a>"
+<a href='/'>revenant</a>
+<a href='/p/psf/requests-html'>psf/requests-html</a>
+
+$ curl -s localhost:8765/p/psf/requests-html/certificate | grep -o '<h[12]>[^<]*</h[12]>'
+<h1>Certificate of Death: psf/requests-html</h1>
+<h2>The deceased</h2>
+<h2>Post-mortem test run</h2>
+<h2>Cause of death</h2>
+<h2>Vital signs outside the code</h2>
+
+$ curl -s localhost:8765/p/psf/requests-html/resurrection | grep -o '<h[12]>[^<]*</h[12]>'
+<h1>Resurrection log: psf/requests-html</h1>
+<h2>Operations</h2>
+<h2>Python matrix (after)</h2>
+<h2>Aftercare</h2>
+
+$ curl -s -X POST -H 'Content-Type: application/json' -d '{"question": "Why does importing requests_html fail with lxml 5.2?"}' localhost:8765/p/psf/requests-html/ask
+{
+    "answer": "Importing requests-html fails with LXML 5.2.0 because the `lxml.html.clean` module is now a separate project called `lxml_html_clean` [#569]. This results in an `ImportError: lxml.html.clean module is now a separate project lxml_html_clean.` [#576]. One user noted that adding `lxml_html_clean` as an explicit dependency in setup.py resolves the import error until a change is made to the project [#569].",
+    "refused": false,
+    "sources": [
+        [
+            "#569",
+            "https://github.com/psf/requests-html/issues/569#issuecomment-3702652256"
+        ],
+        [
+            "#576",
+            "https://github.com/psf/requests-html/issues/576"
+        ]
+    ]
+}
+
+real	0m6.238s
+user	0m0.050s
+sys	0m0.038s
