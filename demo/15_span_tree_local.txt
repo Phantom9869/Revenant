@@ -1,0 +1,37 @@
+$ python demo/investigations/span_tree.py ask psf/requests-html -v "Why does importing requests_html fail with lxml 5.2?"
+The import fails because the `lxml.html.clean` module is now a separate project called `lxml_html_clean` [#569]. This causes an `ImportError` when attempting to import `Cleaner` from `lxml.html.clean` [#576]. One suggestion to resolve this is to add `lxml_html_clean` as an explicit dependency in `setup.py` [#569]. My records do not hold information on whether this approach is acceptable [#569].
+
+  [#569] https://github.com/psf/requests-html/issues/569#issuecomment-3702652256
+  [#576] https://github.com/psf/requests-html/issues/576
+
+  citation check: 4/4 cited sentence(s) supported by their sources
+
+  gemma4:e4b: 5.3s, 2145 prompt / 114 output tokens
+
+--- spans captured locally (in-process transport, nothing sent) ---
+
+revenant ask  [cli]  5.47s
+└── invoke_agent ghost  [gen_ai.invoke_agent]  5.43s  revenant.refused=False, revenant.citations=#569,#576
+    ├── search_memory  [gen_ai.memory.client]  0.10s  gen_ai.memory.record.count=8, revenant.retrieval=hybrid, revenant.max_cosine=0.674
+    │   └── POST http://localhost:11434/api/embed  [http.client]  0.05s
+    ├── chat gemma4:e4b  [gen_ai.chat]  5.33s  gen_ai.request.model=gemma4:e4b, input_tokens=2145, output_tokens=114, revenant.model_seconds=5.326
+    │   └── POST http://localhost:11434/api/chat  [http.client]  5.33s
+    └── verify_citations  [revenant.verify_citations]  0.00s  revenant.claims=4, revenant.claims_withheld=0
+
+$ python demo/investigations/span_tree.py resurrect psf/requests-html --name trace-demo --surgeon none --no-aftercare
+--- spans captured locally (in-process transport, nothing sent) ---
+
+revenant resurrect  [cli]  23.55s
+└── invoke_agent resurrectionist  [gen_ai.invoke_agent]  23.52s  revenant.initial={"passed": 0, "failed": 0, "error": 2, "skipped": 0}, revenant.final={"passed": 30, "failed": 0, "error": 0, "skipped": 0}, revenant.kept=4, revenant.reverted=1
+    ├── execute_tool run_tests  [gen_ai.execute_tool]  0.72s  gen_ai.tool.call.result={"passed": 0, "failed": 0, "error": 2, "skipped": 0}
+    ├── execute_tool apply_fix  [gen_ai.execute_tool]  4.26s  gen_ai.tool.call.result={"verdict": "kept", "reason": "passing 0 -> 24, failing 2 ->
+    │   └── execute_tool run_tests  [gen_ai.execute_tool]  3.68s  gen_ai.tool.call.result={"passed": 24, "failed": 3, "error": 3, "skipped": 0}
+    ├── execute_tool apply_fix  [gen_ai.execute_tool]  3.31s  gen_ai.tool.call.result={"verdict": "reverted", "reason": "regressed 3 passing test(
+    │   └── execute_tool run_tests  [gen_ai.execute_tool]  2.71s  gen_ai.tool.call.result={"passed": 24, "failed": 6, "error": 0, "skipped": 0}
+    ├── execute_tool apply_fix  [gen_ai.execute_tool]  4.46s  gen_ai.tool.call.result={"verdict": "kept", "reason": "passing 24 -> 25, failing 6 -
+    │   └── execute_tool run_tests  [gen_ai.execute_tool]  3.86s  gen_ai.tool.call.result={"passed": 25, "failed": 2, "error": 3, "skipped": 0}
+    ├── execute_tool apply_fix  [gen_ai.execute_tool]  4.78s  gen_ai.tool.call.result={"verdict": "kept", "reason": "passing 25 -> 27, failing 5 -
+    │   └── execute_tool run_tests  [gen_ai.execute_tool]  4.17s  gen_ai.tool.call.result={"passed": 27, "failed": 0, "error": 3, "skipped": 0}
+    └── execute_tool apply_fix  [gen_ai.execute_tool]  5.24s  gen_ai.tool.call.result={"verdict": "kept", "reason": "passing 27 -> 30, failing 3 -
+        └── execute_tool run_tests  [gen_ai.execute_tool]  4.66s  gen_ai.tool.call.result={"passed": 30, "failed": 0, "error": 0, "skipped": 0}
+(209 subprocess spans from the SDK's stdlib integration not shown)
