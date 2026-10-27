@@ -429,5 +429,5 @@ class Handler(BaseHTTPRequestHandler):
 
 def serve(host: str = "127.0.0.1", port: int | None = None):
     port = int(port or os.environ.get("PORT", 8000))
-    print(f"Revenant web on http://{host}:{port}")
+    print(f"Revenant web on http://{host}:{port}", flush=True)
     ThreadingHTTPServer((host, port), Handler).serve_forever()

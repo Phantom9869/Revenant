@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 
@@ -251,7 +252,7 @@ def main(argv=None):
 
     s = sub.add_parser("serve", help="small web UI for summoned patients")
     s.add_argument("--host", default="127.0.0.1")
-    s.add_argument("--port", type=int, default=8000)
+    s.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8000)), help="default: $PORT if set (Render sets it), else 8000")
     s.set_defaults(fn=cmd_serve)
 
     args = ap.parse_args(argv)
