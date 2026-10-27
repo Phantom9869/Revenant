@@ -1,0 +1,34 @@
+{
+  "name": "h2h-dots3",
+  "grimoire": false,
+  "surgeon": {
+    "model": "backboard:openrouter/dots-studio/dots-3-note-preview:free",
+    "calls": 10,
+    "prompt_tokens": 7856,
+    "completion_tokens": 44501,
+    "model_seconds": 532.7,
+    "cost_usd": 0.0,
+    "errors": []
+  },
+  "initial": {
+    "passed": 0,
+    "failed": 0,
+    "error": 2,
+    "skipped": 0
+  },
+  "final": {
+    "passed": 27,
+    "failed": 0,
+    "error": 3,
+    "skipped": 0
+  },
+  "wall_seconds": 576.6,
+  "kept": 3,
+  "reverted": 6,
+  "unappliable": 0,
+  "kept_fixes": [
+    "surgeon:tests.test_internet",
+    "surgeon:test_containing",
+    "surgeon:test_bare_js_eval"
+  ]
+}

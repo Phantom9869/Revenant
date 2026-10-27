@@ -1,0 +1,27 @@
+{
+  "name": "h2h-grimoire",
+  "grimoire": true,
+  "surgeon": null,
+  "initial": {
+    "passed": 0,
+    "failed": 0,
+    "error": 2,
+    "skipped": 0
+  },
+  "final": {
+    "passed": 30,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  },
+  "wall_seconds": 24.6,
+  "kept": 4,
+  "reverted": 1,
+  "unappliable": 0,
+  "kept_fixes": [
+    "lxml-html-clean",
+    "history-assertion:test_containing",
+    "asyncio-loop",
+    "pytest-asyncio-event-loop"
+  ]
+}

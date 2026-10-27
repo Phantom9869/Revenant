@@ -1,0 +1,33 @@
+{
+  "name": "h2h-qwen7b",
+  "grimoire": false,
+  "surgeon": {
+    "model": "qwen2.5-coder:7b",
+    "calls": 10,
+    "prompt_tokens": 8902,
+    "completion_tokens": 852,
+    "model_seconds": 141.6,
+    "cost_usd": null,
+    "errors": []
+  },
+  "initial": {
+    "passed": 0,
+    "failed": 0,
+    "error": 2,
+    "skipped": 0
+  },
+  "final": {
+    "passed": 25,
+    "failed": 2,
+    "error": 3,
+    "skipped": 0
+  },
+  "wall_seconds": 157.6,
+  "kept": 2,
+  "reverted": 2,
+  "unappliable": 3,
+  "kept_fixes": [
+    "surgeon:tests.test_internet",
+    "surgeon:test_containing"
+  ]
+}

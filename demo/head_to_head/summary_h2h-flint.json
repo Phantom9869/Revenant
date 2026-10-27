@@ -1,0 +1,34 @@
+{
+  "name": "h2h-flint",
+  "grimoire": false,
+  "surgeon": {
+    "model": "backboard:openrouter/recursive/flint-v1.0:free",
+    "calls": 9,
+    "prompt_tokens": 6901,
+    "completion_tokens": 63458,
+    "model_seconds": 683.7,
+    "cost_usd": 0.0,
+    "errors": []
+  },
+  "initial": {
+    "passed": 0,
+    "failed": 0,
+    "error": 2,
+    "skipped": 0
+  },
+  "final": {
+    "passed": 27,
+    "failed": 0,
+    "error": 3,
+    "skipped": 0
+  },
+  "wall_seconds": 718.6,
+  "kept": 3,
+  "reverted": 6,
+  "unappliable": 0,
+  "kept_fixes": [
+    "surgeon:tests.test_internet",
+    "surgeon:test_containing",
+    "surgeon:test_bare_js_eval"
+  ]
+}
