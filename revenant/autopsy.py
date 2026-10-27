@@ -39,7 +39,7 @@ def examine(tree: Path, workdir: Path, python: str = "3.13", plan: TestPlan | No
                       python=python, args=plan.args) as s:
         run = box.run_tests(plan)
         tracing.set_data(s, **{"revenant.sandboxed": run.sandboxed, "revenant.test_seconds": round(run.seconds, 2)})
-        outcomes = diagnose.parse_junit(run.junit)
+        outcomes = diagnose.parse_junit(run.junit, root=tree)
         tally = {k: sum(o.status == k for o in outcomes) for k in ("passed", "failed", "error", "skipped")}
         tracing.tool_result(s, tally)
     symptoms, unexplained = diagnose.classify(outcomes, run.stdout)

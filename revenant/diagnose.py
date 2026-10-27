@@ -72,8 +72,10 @@ class Symptom:
     location: str = ""
 
 
-def parse_junit(path: Path) -> list[Outcome]:
-    path = Path(path)
+def parse_junit(path: Path, root: Path | None = None) -> list[Outcome]:
+    """Read pytest's junit XML. Paths under `root` are made relative, so logs
+    and reports don't carry the absolute layout of the machine that ran them."""
+    path, base = Path(path), root
     if not path.exists():
         return []
     root = ET.parse(path).getroot()
@@ -86,9 +88,17 @@ def parse_junit(path: Path) -> list[Outcome]:
             if el is not None:
                 status = {"failure": "failed"}.get(tag, tag)
                 msg, detail = el.get("message", "") or "", el.text or ""
+                if base is not None:
+                    msg, detail = relativize(msg, base), relativize(detail, base)
                 break
         out.append(Outcome(name, status, msg, detail))
     return out
+
+
+def relativize(text: str, root: Path) -> str:
+    """Strip the `root/` prefix from every path in `text`."""
+    prefix = str(Path(root).resolve()).rstrip("/") + "/"
+    return text.replace(prefix, "") if text else text
 
 
 def tally(outcomes: list[Outcome]) -> dict[str, int]:

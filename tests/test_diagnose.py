@@ -46,3 +46,15 @@ def test_locate_prefers_project_frames():
           "pkg/core.py:42: in g\n/usr/lib/python3.13/asyncio/events.py:1: in h\n")
     assert locate(tb) == "pkg/core.py:42"
     assert locate("tests/test_a.py:10: in test_a\n") == "tests/test_a.py:10"
+
+
+def test_parse_junit_relativizes_paths_under_root(tmp_path):
+    root = tmp_path / "patient" / "fork"
+    f = tmp_path / "j.xml"
+    f.write_text(f"""<testsuites><testsuite>
+<testcase classname="tests.test_x" name="test_async"><error message="failed on setup with &quot;file {root}/tests/test_x.py, line 38&quot;">{root}/requests_html.py:797: RuntimeError</error></testcase>
+</testsuite></testsuites>""")
+    (o,) = parse_junit(f, root=root)
+    assert o.message == 'failed on setup with "file tests/test_x.py, line 38"'
+    assert o.detail == "requests_html.py:797: RuntimeError"
+    assert str(tmp_path) not in o.message + o.detail
