@@ -1,0 +1,30 @@
+== 03_ghost_json.json
+Q: How do I close an HTMLSession and the browser it started?
+
+saved answer (gemma4:e4b):
+To close all windows, one must call `.session.close()` after rendering the page [#321]. For instance, after using `webpage.html.render()`, you should call `webpage.session.close()` [#321]. There was a mention of needing a handle to close the pyppeteer browser, which involved `browser.close()` [#165].
+
+  [  supported] To close all windows, one must call `.session.close()` after rendering the page.
+                cites #321; supported by #321 (word overlap 100%)
+  [  supported] For instance, after using `webpage.html.render()`, you should call `webpage.session.close()`.
+                cites #321; supported by #321 (word overlap 50%)
+  [  supported] There was a mention of needing a handle to close the pyppeteer browser, which involved `browser.close()`.
+                cites #165; supported by #165 (word overlap 83%)
+
+after the check:
+To close all windows, one must call `.session.close()` after rendering the page [#321]. For instance, after using `webpage.html.render()`, you should call `webpage.session.close()` [#321]. There was a mention of needing a handle to close the pyppeteer browser, which involved `browser.close()` [#165].
+
+== 09_ghost_archive.json
+Q: According to the archived copy of html.python-requests.org from 2019, how do I install you and what was the documented version?
+
+saved answer (gemma4:e4b):
+To install me, one should use the command `$ pipenv install requests-html` [archive:html.python-requests.org@2019-09-15]. My records do not specify a single documented version at that time, though one comment mentioned 0.9.0 as the current version on PyPI [archive:html.python-requests.org@2019-09-15].
+
+  [  supported] To install me, one should use the command `$ pipenv install requests-html`.
+                cites archive:html.python-requests.org@2019-09-15; supported by archive:html.python-requests.org@2019-09-15 (word overlap 67%)
+  [unsupported] My records do not specify a single documented version at that time, though one comment mentioned 0.9.0 as the …
+                cites archive:html.python-requests.org@2019-09-15; supported by archive:html.python-requests.org@2019-09-15 (missing from cited records: 0.9.0; word overlap 71%)
+
+after the check:
+To install me, one should use the command `$ pipenv install requests-html` [archive:html.python-requests.org@2019-09-15].
+

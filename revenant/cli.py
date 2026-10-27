@@ -55,7 +55,7 @@ def cmd_summon(args):
     print(json.dumps(out, indent=2))
 
 
-def build_ghost(p: Patient, model_spec: str | None = None):
+def build_ghost(p: Patient, model_spec: str | None = None, verify: bool = True):
     from .ghost import Ghost
     from .integrations import tracing
     from .memory.retrieve import Retriever
@@ -64,20 +64,23 @@ def build_ghost(p: Patient, model_spec: str | None = None):
     model = get_chat_model(model_spec or config.GHOST_MODEL)
     if tracing.enabled():
         model = tracing.TracedModel(model, "ghost")
-    return Ghost(p.slug.split("/")[1], Retriever(Memory(p.db), OllamaEmbedder()), model)
+    embedder = None if config.EMBED_MODEL.lower() == "none" else OllamaEmbedder()   # "none": keyword retrieval only
+    return Ghost(p.slug.split("/")[1], Retriever(Memory(p.db), embedder), model, verify=verify)
 
 
 def cmd_ask(args):
     p = _patient(args)
     if not p.db.exists():
         sys.exit(f"No memory for {p.slug}. Run: revenant summon {p.slug}")
-    ghost = build_ghost(p, args.model)
+    ghost = build_ghost(p, args.model, verify=not args.no_verify)
     ans = ghost.ask(args.question)
     if args.json:
         print(json.dumps({"question": ans.question, "answer": ans.text, "refused": ans.refused,
                           "reason": ans.reason, "sources": ans.sources(), "stripped": ans.stripped,
-                          "model": ans.model, "seconds": round(ans.seconds, 1),
-                          "retrieved": [h.doc.ref for h in ans.hits]}, indent=2))
+                          "unsupported": ans.unsupported, "claims": [c.as_dict() for c in ans.claims],
+                          "raw": ans.raw, "model": ans.model, "seconds": round(ans.seconds, 1),
+                          "prompt_tokens": ans.prompt_tokens, "completion_tokens": ans.completion_tokens,
+                          "cost_usd": ans.cost_usd, "retrieved": [h.doc.ref for h in ans.hits]}, indent=2))
         return
     print(ans.text)
     if ans.sources():
@@ -86,6 +89,17 @@ def cmd_ask(args):
             print(f"  [{ref}] {url}")
     if ans.stripped:
         print(f"\n  (removed {len(ans.stripped)} citation(s) not found in the evidence: {', '.join(ans.stripped)})")
+    if ans.withheld:
+        print(f"\n  (withheld {len(ans.withheld)} sentence(s) its citations do not support:")
+        for c in ans.withheld:
+            why = f"not in any cited record: {', '.join(c.missing)}" if c.missing else f"word overlap {c.overlap:.0%}"
+            print(f"     - \"{c.sentence[:160]}\" [{', '.join(c.refs)}] ({why})")
+        print("  )")
+    elif ans.unsupported:
+        print(f"\n  (removed citation(s) that do not support their sentence: {', '.join(ans.unsupported)})")
+    if ans.claims and args.verbose:
+        n = sum(c.verdict == "supported" for c in ans.claims)
+        print(f"\n  citation check: {n}/{sum(c.verdict != 'uncited' for c in ans.claims)} cited sentence(s) supported by their sources")
     if ans.refused and args.verbose:
         print(f"\n  ({ans.reason})")
     if args.verbose:
@@ -154,6 +168,7 @@ def main(argv=None):
     s.add_argument("question")
     s.add_argument("--model", help=f"chat model (default {config.GHOST_MODEL}; 'backboard:provider/model' also works)")
     s.add_argument("--json", action="store_true")
+    s.add_argument("--no-verify", action="store_true", help="skip the per-sentence citation support check")
     s.add_argument("-v", "--verbose", action="store_true")
     s.set_defaults(fn=cmd_ask)
 

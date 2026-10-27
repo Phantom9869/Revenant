@@ -2,8 +2,10 @@
 
 Every claim must carry a citation to evidence that was actually retrieved: a commit
 ([a1b2c3d]), an issue or PR ([#569]) or a file in the repo ([README.rst]). Citations
-that don't match the evidence are stripped, and an answer with no valid citation is
-replaced by a refusal. The ghost may be eerie; it may not make things up.
+that don't match the evidence are stripped; then every sentence is checked against the
+text of the records it cites (see citecheck.py), citations that don't support their
+sentence are removed, and sentences left with no support are withheld. An answer with no
+supported citation is replaced by a refusal. The ghost may be eerie; it may not make things up.
 """
 from __future__ import annotations
 
@@ -41,6 +43,10 @@ class Answer:
     prompt_tokens: int = 0
     completion_tokens: int = 0
     raw: str = ""
+    claims: list = field(default_factory=list)        # citecheck.Claim per sentence
+    unsupported: list[str] = field(default_factory=list)  # citations removed by the support check
+    withheld: list = field(default_factory=list)      # sentences removed by the support check
+    cost_usd: float | None = None
 
     def sources(self) -> list[tuple[str, str]]:
         seen, out = set(), []
@@ -112,13 +118,14 @@ def check_citations(text: str, allowed: set[str]) -> tuple[str, list[str], list[
 
 class Ghost:
     def __init__(self, name: str, retriever: Retriever, model, k: int = 8,
-                 min_cosine: float = 0.30, tracer=None):
+                 min_cosine: float = 0.30, tracer=None, verify: bool = True):
         self.name = name
         self.retriever = retriever
         self.model = model
         self.k = k
         self.min_cosine = min_cosine
         self.tracer = tracer
+        self.verify = verify
 
     def ask(self, question: str) -> Answer:
         from .integrations import tracing
@@ -158,5 +165,27 @@ class Ghost:
             ans.reason = ("model found no answer in the evidence" if SILENT.split(".")[0] in raw
                           else "answer carried no verifiable citation")
             return ans
+        if self.verify:
+            with tracing.span("revenant.verify_citations", "verify_citations") as vs:
+                cleaned, valid = self._verify(ans, cleaned, valid, hits)
+                tracing.set_data(vs, **{"revenant.claims": len(ans.claims),
+                                        "revenant.claims_withheld": len(ans.withheld),
+                                        "revenant.citations_unsupported": ",".join(ans.unsupported) or None})
+            if not valid:
+                ans.refused, ans.reason = True, "no citation supported its sentence"
+                return ans
         ans.text, ans.cited = cleaned, valid
         return ans
+
+    def _verify(self, ans: Answer, cleaned: str, valid: list[str], hits: list[Hit]) -> tuple[str, list[str]]:
+        from .citecheck import apply_support, check_support
+        sources: dict[str, str] = {}
+        for h in hits:
+            d = h.doc
+            sources[d.ref] = sources.get(d.ref, "") + f"\n{d.title}\n{d.author}\n{d.date}\n{d.text}"
+        known = (self.name, self.name.replace("-", "_"))   # the ghost may name itself without a source
+        ans.claims = check_support(cleaned, sources, _normalise, known=known)
+        text, removed, withheld = apply_support(cleaned, ans.claims, _normalise)
+        ans.unsupported, ans.withheld = removed, withheld
+        still = {r for c in ans.claims if c.verdict == "supported" for r in c.supported_by}
+        return text, [r for r in valid if r in still]

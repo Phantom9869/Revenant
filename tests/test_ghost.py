@@ -52,7 +52,7 @@ class FakeModel:
 
 
 def test_ghost_answers_with_checked_citations():
-    m = FakeModel("lxml moved its cleaner out [#569]. I made up [#1].")
+    m = FakeModel("lxml.html.clean became a separate project [#569]. I made up [#1].")
     g = Ghost("demo", FakeRetriever([Hit(doc("#569"), 0.03, 0.7)]), m)
     a = g.ask("why can't I import you?")
     assert not a.refused and a.cited == ["#569"] and a.stripped == ["#1"]
