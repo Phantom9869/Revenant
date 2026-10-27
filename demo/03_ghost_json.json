@@ -1,0 +1,75 @@
+{
+  "question": "How do I close an HTMLSession and the browser it started?",
+  "answer": "To close all windows, one must call `.session.close()` after rendering the HTML [#321]. One user noted that attempts to use `.close()`, `.html.browser.close()`, or `.html.browser.disconnect()` did not close everything [#321]. Another user found that attaching the `HTMLSession` to the `HTML` element using `new_html = HTML(html=new_text, session=self.session)` allowed `self.session.close()` to close all chromium processes [#242].",
+  "refused": false,
+  "reason": "",
+  "sources": [
+    [
+      "#321",
+      "https://github.com/psf/requests-html/issues/321#issuecomment-529166499"
+    ],
+    [
+      "#242",
+      "https://github.com/psf/requests-html/issues/242#issuecomment-441458215"
+    ]
+  ],
+  "stripped": [],
+  "unsupported": [],
+  "claims": [
+    {
+      "sentence": "To close all windows, one must call `.session.close()` after rendering the HTML.",
+      "refs": [
+        "#321"
+      ],
+      "verdict": "supported",
+      "supported_by": [
+        "#321"
+      ],
+      "unsupported_refs": [],
+      "missing_details": [],
+      "overlap": 1.0
+    },
+    {
+      "sentence": "One user noted that attempts to use `.close()`, `.html.browser.close()`, or `.html.browser.disconnect()` did not close everything.",
+      "refs": [
+        "#321"
+      ],
+      "verdict": "supported",
+      "supported_by": [
+        "#321"
+      ],
+      "unsupported_refs": [],
+      "missing_details": [],
+      "overlap": 0.5
+    },
+    {
+      "sentence": "Another user found that attaching the `HTMLSession` to the `HTML` element using `new_html = HTML(html=new_text, session=self.session)` allowed `self.session.close()` to close all chromium processes.",
+      "refs": [
+        "#242"
+      ],
+      "verdict": "supported",
+      "supported_by": [
+        "#242"
+      ],
+      "unsupported_refs": [],
+      "missing_details": [],
+      "overlap": 0.62
+    }
+  ],
+  "raw": "To close all windows, one must call `.session.close()` after rendering the HTML [\\#321]. One user noted that attempts to use `.close()`, `.html.browser.close()`, or `.html.browser.disconnect()` did not close everything [\\#321]. Another user found that attaching the `HTMLSession` to the `HTML` element using `new_html = HTML(html=new_text, session=self.session)` allowed `self.session.close()` to close all chromium processes [\\#242].",
+  "model": "gemma4:e4b",
+  "seconds": 5.6,
+  "prompt_tokens": 1351,
+  "completion_tokens": 116,
+  "cost_usd": null,
+  "retrieved": [
+    "dd05a02",
+    "2d4c58d",
+    "#321",
+    "#586",
+    "#165",
+    "#199",
+    "#385",
+    "#242"
+  ]
+}

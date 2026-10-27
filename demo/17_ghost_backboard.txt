@@ -1,0 +1,19 @@
+$ revenant ask psf/requests-html -v --model backboard:openrouter/dots-studio/dots-3-note-preview:free "Why does importing requests_html fail with lxml 5.2?"
+Importing requests_html fails with lxml 5.2 because the lxml.html.clean module is no longer bundled; it has been moved to a separate project called lxml_html_clean [#569] [#576]. The code attempts to import Cleaner from lxml.html.clean, which raises an ImportError [#569] [#576]. A comment on issue #569 explains that adding lxml_html_clean as an explicit dependency in setup.py fixes the import error [#569].
+
+  [#569] https://github.com/psf/requests-html/issues/569#issuecomment-3702652256
+  [#576] https://github.com/psf/requests-html/issues/576
+
+  citation check: 3/3 cited sentence(s) supported by their sources
+
+  backboard:openrouter/dots-studio/dots-3-note-preview:free: 20.1s, 1890 prompt / 1526 output tokens, reported cost $0.000000
+
+$ revenant ask psf/requests-html -v --model backboard:openrouter/dots-studio/dots-3-note-preview:free "Who created you, and when was your last release?"
+I was created by Kenneth Reitz, as recorded in the first commit ever [tags]. My last release was version v0.10.0, tagged on 2019-02-17 [tags].
+
+  [tags] https://github.com/psf/requests-html/tags
+
+  citation check: 2/2 cited sentence(s) supported by their sources
+
+  backboard:openrouter/dots-studio/dots-3-note-preview:free: 19.7s, 1522 prompt / 1483 output tokens, reported cost $0.000000
+

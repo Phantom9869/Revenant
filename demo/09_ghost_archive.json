@@ -1,0 +1,60 @@
+{
+  "question": "According to the archived copy of html.python-requests.org from 2019, how do I install you and what was the documented version?",
+  "answer": "To install me, one uses the command `$ pipenv install requests-html` [archive:html.python-requests.org@2019-09-15].",
+  "refused": false,
+  "reason": "",
+  "sources": [
+    [
+      "archive:html.python-requests.org@2019-09-15",
+      "https://web.archive.org/web/20190915235734/http://html.python-requests.org:80/"
+    ]
+  ],
+  "stripped": [],
+  "unsupported": [
+    "#241"
+  ],
+  "claims": [
+    {
+      "sentence": "To install me, one uses the command `$ pipenv install requests-html`.",
+      "refs": [
+        "archive:html.python-requests.org@2019-09-15"
+      ],
+      "verdict": "supported",
+      "supported_by": [
+        "archive:html.python-requests.org@2019-09-15"
+      ],
+      "unsupported_refs": [],
+      "missing_details": [],
+      "overlap": 0.33
+    },
+    {
+      "sentence": "The records do not specify a documented version at that time, though one comment mentioned trying `pip install requests-html==0.9.0`.",
+      "refs": [
+        "#241"
+      ],
+      "verdict": "unsupported",
+      "supported_by": [],
+      "unsupported_refs": [
+        "#241"
+      ],
+      "missing_details": [],
+      "overlap": 0.2
+    }
+  ],
+  "raw": "To install me, one uses the command `$ pipenv install requests-html` [archive:html.python-requests.org@2019-09-15]. The records do not specify a documented version at that time, though one comment mentioned trying `pip install requests-html==0.9.0` [\\#241].",
+  "model": "gemma4:e4b",
+  "seconds": 4.0,
+  "prompt_tokens": 1784,
+  "completion_tokens": 75,
+  "cost_usd": null,
+  "retrieved": [
+    "archive:html.python-requests.org@2019-09-15",
+    "#241",
+    "archive:html.python-requests.org@2019-09-15",
+    "#22",
+    "#88",
+    "#397",
+    "#221",
+    "#147"
+  ]
+}
