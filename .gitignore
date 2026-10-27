@@ -5,3 +5,5 @@ __pycache__/
 .revenant/
 .pytest_cache/
 PLAN.md
+build/
+dist/
