@@ -104,7 +104,8 @@ def cmd_ask(args):
         print(f"\n  ({ans.reason})")
     if args.verbose:
         if ans.prompt_tokens:
-            print(f"\n  {ans.model}: {ans.seconds:.1f}s, {ans.prompt_tokens} prompt / {ans.completion_tokens} output tokens")
+            cost = "" if ans.cost_usd is None else f", reported cost ${ans.cost_usd:.6f}"
+            print(f"\n  {ans.model}: {ans.seconds:.1f}s, {ans.prompt_tokens} prompt / {ans.completion_tokens} output tokens{cost}")
         else:
             print(f"\n  {ans.model}: not called")
 
@@ -126,19 +127,44 @@ def cmd_resurrect(args):
     from .resurrect import commit, resurrect
     p = _patient(args)
     from .integrations import tracing
-    surgeon = None if args.surgeon == "none" else OllamaClient(args.surgeon, temperature=0.1)
+    from .models import Metered, get_chat_model
+    if args.surgeon == "none":
+        surgeon = None
+    elif args.surgeon.startswith("backboard:"):
+        surgeon = get_chat_model(args.surgeon)
+    else:
+        surgeon = OllamaClient(args.surgeon, temperature=0.1)
     if surgeon is not None and not surgeon.available():
         print(f"  surgeon model {args.surgeon} not available in Ollama; continuing with the grimoire only")
         surgeon = None
+    meter = Metered(surgeon) if surgeon is not None else None
+    surgeon = meter
     if surgeon is not None and tracing.enabled():
         surgeon = tracing.TracedModel(surgeon, "surgeon")
     t = time.time()
     res = resurrect(p, use_grimoire=not args.no_grimoire, surgeon=surgeon, python=args.python, name=args.name)
     notes = [] if args.no_aftercare or (res.final.tally["failed"] or res.final.tally["error"]) else run_aftercare(res)
-    md = resurrection_log(res, notes)
+    wall = time.time() - t
+    usage = meter.summary() if meter else None
+    md = resurrection_log(res, notes, usage=usage)
     (res.tree / "RESURRECTION_LOG.md").write_text(md)
     commit(res.tree, "Add resurrection log", paths=["RESURRECTION_LOG.md"])
-    (p.reports / f"RESURRECTION_LOG{'' if args.name == 'fork' else '_' + args.name}.md").write_text(md)
+    suffix = "" if args.name == "fork" else "_" + args.name
+    (p.reports / f"RESURRECTION_LOG{suffix}.md").write_text(md)
+    count = lambda v: sum(a.verdict == v for a in res.attempts)
+    summary = {"name": args.name, "grimoire": not args.no_grimoire, "surgeon": usage,
+               "initial": res.initial.tally, "final": res.final.tally, "wall_seconds": round(wall, 1),
+               "kept": count("kept"), "reverted": count("reverted"), "unappliable": count("unappliable"),
+               "kept_fixes": [a.fix.id for a in res.attempts if a.verdict == "kept"]}
+    (p.reports / f"summary{suffix}.json").write_text(json.dumps(summary, indent=2))
+    timeline = {**summary, "date": time.strftime("%Y-%m-%d"), "tree": str(res.tree.name),
+                "matrix": getattr(res, "matrix", None), "aftercare": notes,
+                "attempts": [{"id": a.fix.id, "title": a.fix.title, "source": a.fix.source, "why": a.fix.why,
+                              "citations": a.fix.citations, "verdict": a.verdict, "reason": a.reason,
+                              "before": a.before, "after": a.after, "diff": a.diff[:6000], "commit": a.commit,
+                              "seconds": round(a.seconds, 1), "model_seconds": round(a.model_seconds, 1)}
+                             for a in res.attempts]}
+    (p.reports / f"resurrection{suffix}.json").write_text(json.dumps(timeline, indent=2, default=str))
     print(md)
     print(f"\nRevived tree: {res.tree} (branch revenant/resurrection), {time.time() - t:.0f}s")
 
@@ -181,7 +207,7 @@ def main(argv=None):
     s = sub.add_parser("resurrect", help="fix it, one verified edit at a time")
     s.add_argument("repo")
     s.add_argument("--python", default="3.13")
-    s.add_argument("--surgeon", default=config.SURGEON_MODEL, help="Ollama code model, or 'none'")
+    s.add_argument("--surgeon", default=config.SURGEON_MODEL, help="Ollama code model, a backboard:<provider>/<model> spec, or 'none'")
     s.add_argument("--no-grimoire", action="store_true", help="code-model surgeon only, no grimoire (for comparison)")
     s.add_argument("--no-aftercare", action="store_true")
     s.add_argument("--name", default="fork", help="working tree name under the patient folder")

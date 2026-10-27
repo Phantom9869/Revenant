@@ -1,0 +1,58 @@
+providers: anthropic, aws-bedrock, byteplus, cerebras, cohere, elevenlabs, fal, featherless, google, openai, openrouter, speechmatics, typesafe, xai
+openrouter LLMs listed: 364
+balance: {'balance_usd': 5.0, 'free_credit_usd': 5.0, 'paid_credit_usd': 0.0}
+
+$0 models (description excerpt):
+  cohere/north-mini-code:free                  ctx   256000  in $0.0/1M  out $0.0/1M
+      North Mini Code is Cohere's first agentic coding model and the debut of its North family. A sparse mixture-of-experts model with 30B total parameters and 3B active, it is
+  dots-studio/dots-3-note-preview:free         ctx   512000  in $0.0/1M  out $0.0/1M
+      Dots3-Note Preview is an open-weight mixture-of-experts model from Dots Studio, with 16B active parameters out of 280B total. It is the lightest model in the Dots 3 famil
+  recursive/flint-v1.0:free                    ctx   262144  in $0.0/1M  out $0.0/1M
+      Flint is an open-weight mixture-of-experts model from Recursive, with about 2.5B active parameters out of 40B total, built by Recursive's autoresearch system Eureka Machi
+  xingchen-agi/xing4.0-29b-a4b:free            ctx   262144  in $0.0/1M  out $0.0/1M
+      Xing4.0-29B-A4B is an open-weight mixture-of-experts language model from China Telecom's AI team (TeleAI) and the successor to the TeleChat series. It has 29B total param
+
+models whose own description says open-weight / open-source, coding-related:
+  recursive/flint-v1.0:free                    ctx   262144  in $0.0/1M  out $0.0/1M
+  qwen/qwen3-coder-next                        ctx   262144  in $0.12/1M  out $0.8/1M
+  moonshotai/kimi-k3                           ctx  1048576  in $0.169/1M  out $20.0/1M
+  qwen/qwen3.8-27b                             ctx  1000000  in $0.2/1M  out $2.5/1M
+  reflection/beam-1.0-501b-a23b                ctx  1048576  in $0.25/1M  out $1.0/1M
+  mistralai/devstral-2512                      ctx   262144  in $0.4/1M  out $2.0/1M
+  thinkingmachines/inkling                     ctx   524288  in $1.0/1M  out $4.05/1M
+  meta/muse-spark-open                         ctx  1048576  in $1.25/1M  out $4.25/1M
+  moonshotai/kimi-k3.1-pro                     ctx  1048576  in $2.0/1M  out $10.0/1M
+  cohere/command-a                             ctx   256000  in $2.5/1M  out $10.0/1M
+
+larger open-weight coding models (listed by family; prices from the API):
+  qwen/qwen3-coder                             ctx   262144  in $0.3/1M  out $1.0/1M
+  qwen/qwen3-coder-30b-a3b-instruct            ctx   262144  in $0.07/1M  out $0.28/1M
+  qwen/qwen-2.5-coder-32b-instruct             ctx    32768  in $0.66/1M  out $1.0/1M
+  mistralai/devstral-2512                      ctx   262144  in $0.4/1M  out $2.0/1M
+  openai/gpt-oss-120b                          ctx   131072  in $0.15/1M  out $0.6/1M
+  deepseek/deepseek-v3.2                       ctx   163840  in $0.28/1M  out $0.42/1M
+  z-ai/glm-4.7                                 ctx   204800  in $0.54/1M  out $1.98/1M
+
+POST /threads/messages  model=qwen/qwen3-coder
+{
+  "status": "FAILED",
+  "model_provider": null,
+  "model_name": null,
+  "input_tokens": null,
+  "output_tokens": null,
+  "total_tokens": null,
+  "cost_usd": null,
+  "content": "Your free credit is reserved for Memory & RAG, so it can't cover LLM chat. Add credits or start a subscription on the Billing page to continue \u2014 and turn on auto-reload so your balance tops up automatically and you're ne"
+}
+
+POST /threads/messages  model=dots-studio/dots-3-note-preview:free
+{
+  "status": "COMPLETED",
+  "model_provider": "openrouter",
+  "model_name": "dots-studio/dots-3-note-preview:free",
+  "input_tokens": 37,
+  "output_tokens": 20,
+  "total_tokens": 57,
+  "cost_usd": 0.0,
+  "content": "\n\nok"
+}

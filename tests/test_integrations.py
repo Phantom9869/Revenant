@@ -145,3 +145,39 @@ def test_ghost_traces_follow_gen_ai_conventions(monkeypatch):
     assert chat["gen_ai.operation.name"] == "chat" and chat["gen_ai.usage.total_tokens"] == 15
     assert ops["gen_ai.chat"]["parent_span_id"] == ops["gen_ai.invoke_agent"]["span_id"]
     assert "gen_ai.input.messages" not in chat  # content is opt-in
+
+
+def test_backboard_client_reads_usage_and_refuses_failed_runs():
+    import pytest
+    from revenant.models import BackboardClient, BackboardError
+    sent = {}
+
+    def ok(url, payload, headers, timeout):
+        sent.update(payload)
+        return {"status": "COMPLETED", "content": "hi", "model_provider": "openrouter", "model_name": "m",
+                "input_tokens": 12, "output_tokens": 3, "cost_usd": 0.0}
+
+    r = BackboardClient("m", api_key="k", opener=ok).chat([{"role": "system", "content": "S"},
+                                                           {"role": "user", "content": "U"}])
+    assert (r.text, r.prompt_tokens, r.completion_tokens, r.cost_usd) == ("hi", 12, 3, 0.0)
+    assert sent["system_prompt"] == "S" and sent["memory"] == "off" and sent["model_name"] == "m"
+
+    def failed(url, payload, headers, timeout):
+        return {"status": "FAILED", "content": "Your free credit is reserved for Memory & RAG"}
+
+    with pytest.raises(BackboardError, match="FAILED"):
+        BackboardClient("m", api_key="k", opener=failed).chat([{"role": "user", "content": "U"}])
+
+
+def test_backboard_client_retries_upstream_rate_limits():
+    from revenant.models import BackboardClient
+    calls, waits = [], []
+
+    def flaky(url, payload, headers, timeout):
+        calls.append(1)
+        if len(calls) < 3:
+            return {"status": "FAILED", "content": "LLM Error: Error code: 429 - temporarily rate-limited upstream"}
+        return {"status": "COMPLETED", "content": "ok", "input_tokens": 1, "output_tokens": 1, "cost_usd": 0.0}
+
+    r = BackboardClient("m", api_key="k", opener=flaky, sleep=waits.append).chat([{"role": "user", "content": "U"}])
+    assert r.text == "ok" and len(calls) == 3 and waits == [15.0, 30.0]

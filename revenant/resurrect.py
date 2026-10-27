@@ -119,7 +119,14 @@ def _surgeon_fixes(surgeon, tree, exam, tried, tries, res, log):
                 res.attempts.append(Attempt(Fix(key, f"Surgeon's edit for {key[8:]}", [], str(e),
                                                 source=f"surgeon:{surgeon.name}"),
                                             "unappliable", exam.tally, None, reason=str(e)))
-                log(f"[revenant] {key}: model edit unappliable ({e})")
+                log(f"[Revenant] {key}: model edit unappliable ({e})")
+                continue
+            except (OSError, RuntimeError) as e:   # model server unreachable, dropped connection, out of credit
+                why = f"model call failed: {type(e).__name__}: {str(e)[:200]}"
+                res.attempts.append(Attempt(Fix(key, f"Surgeon's edit for {key[8:]}", [], why,
+                                                source=f"surgeon:{surgeon.name}"),
+                                            "unappliable", exam.tally, None, reason=why))
+                log(f"[Revenant] {key}: {why}")
                 continue
             if fix:
                 return [fix], {fix.id: (secs, raw)}

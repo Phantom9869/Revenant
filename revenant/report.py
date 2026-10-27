@@ -10,7 +10,7 @@ def tally_row(label: str, t: dict | None) -> str:
     return f"| {label} | {t['passed']} | {t['failed']} | {t['error']} |"
 
 
-def resurrection_log(res, notes: list[str] | None = None, title_extra: str = "") -> str:
+def resurrection_log(res, notes: list[str] | None = None, title_extra: str = "", usage: dict | None = None) -> str:
     p = res.patient
     L = [f"# Resurrection log: {p.slug}{title_extra}", "",
          f"*{date.today().isoformat()}, branch `revenant/resurrection` of a local clone. "
@@ -45,4 +45,12 @@ def resurrection_log(res, notes: list[str] | None = None, title_extra: str = "")
         left = [o for o in res.final.outcomes if o.status in ("failed", "error")]
         if left:
             L += ["## Still dead", ""] + [f"- `{o.test}`: {o.message[:200]}" for o in left] + [""]
+    if usage:
+        cost = "not reported" if usage.get("cost_usd") is None else f"${usage['cost_usd']:.6f}"
+        L += ["## Surgeon usage (as reported by the model server)", "",
+              "| model | calls | input tokens | output tokens | model time | cost |", "|---|---|---|---|---|---|",
+              f"| `{usage['model']}` | {usage['calls']} | {usage['prompt_tokens']} | {usage['completion_tokens']} "
+              f"| {usage['model_seconds']}s | {cost} |", ""]
+        if usage.get("errors"):
+            L += ["Model call errors:", ""] + [f"- {e}" for e in usage["errors"]] + [""]
     return "\n".join(L)

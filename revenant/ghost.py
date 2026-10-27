@@ -155,6 +155,7 @@ class Ghost:
         res = self.model.chat([{"role": "system", "content": system},
                                {"role": "user", "content": user}])
         ans.seconds, ans.prompt_tokens, ans.completion_tokens = res.seconds, res.prompt_tokens, res.completion_tokens
+        ans.cost_usd = getattr(res, "cost_usd", None)
         raw = res.text.strip()
         ans.raw = raw
         allowed = {h.doc.ref for h in hits}
