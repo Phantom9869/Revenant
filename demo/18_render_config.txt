@@ -1,0 +1,117 @@
+# The Render configuration, run locally (not on Render)
+#
+# The same environment that render.yaml sets, on this box:
+#   PORT=10000  REVENANT_HOME=deploy/bundle  REVENANT_EMBED_MODEL=none
+#   REVENANT_GHOST_MODEL=backboard:openrouter/dots-studio/dots-3-note-preview:free
+#   BACKBOARD_API_KEY set in the environment (value not shown); SENTRY_DSN unset
+# deploy/bundle was made with:
+#   revenant export psf/requests-html --to deploy/bundle --no-vectors
+# Ollama is not used: retrieval is keyword-only (FTS5) and the ghost runs on Backboard.
+
+$ revenant serve --host 0.0.0.0
+Revenant web on http://0.0.0.0:10000
+
+GET /healthz -> 200, 2 bytes
+GET / -> 200, 8133 bytes
+GET /p/psf/requests-html -> 200, 9430 bytes
+GET /p/psf/requests-html/certificate -> 200, 11398 bytes
+GET /p/psf/requests-html/resurrection -> 200, 19981 bytes
+
+$ curl -X POST -H 'Content-Type: application/json' -d '{"q": "Why does importing requests_html fail with lxml 5.2?"}' http://127.0.0.1:10000/p/psf/requests-html/ask
+{
+  "answer": "In the quiet of the version change, I recall that the import fails because lxml 5.2.0 no longer includes the html.clean module [#569] The cleaner code was moved to a separate package called lxml_html_clean [#558] When requests_html attempts to import lxml.html.clean, the missing submodule raises an ImportError [#569] Adding lxml_html_clean as an explicit dependency resolves the issue [#569]",
+  "refused": false,
+  "reason": "",
+  "sources": [
+    [
+      "#569",
+      "https://github.com/psf/requests-html/issues/569#issuecomment-3702652256"
+    ],
+    [
+      "#558",
+      "https://github.com/psf/requests-html/issues/558#issuecomment-2031436636"
+    ]
+  ],
+  "unsupported": [],
+  "claims": [
+    {
+      "sentence": "In the quiet of the version change, I recall that the import fails because lxml 5.2.0 no longer includes the html.clean module",
+      "refs": [
+        "#569"
+      ],
+      "verdict": "supported",
+      "supported_by": [
+        "#569"
+      ],
+      "unsupported_refs": [],
+      "missing_details": [],
+      "overlap": 0.64
+    },
+    {
+      "sentence": "The cleaner code was moved to a separate package called lxml_html_clean",
+      "refs": [
+        "#558"
+      ],
+      "verdict": "supported",
+      "supported_by": [
+        "#558"
+      ],
+      "unsupported_refs": [],
+      "missing_details": [],
+      "overlap": 0.56
+    },
+    {
+      "sentence": "When requests_html attempts to import lxml.html.clean, the missing submodule raises an ImportError",
+      "refs": [
+        "#569"
+      ],
+      "verdict": "supported",
+      "supported_by": [
+        "#569"
+      ],
+      "unsupported_refs": [],
+      "missing_details": [],
+      "overlap": 0.5
+    },
+    {
+      "sentence": "Adding lxml_html_clean as an explicit dependency resolves the issue",
+      "refs": [
+        "#569"
+      ],
+      "verdict": "supported",
+      "supported_by": [
+        "#569"
+      ],
+      "unsupported_refs": [],
+      "missing_details": [],
+      "overlap": 0.88
+    }
+  ],
+  "model": "backboard:openrouter/dots-studio/dots-3-note-preview:free"
+}
+HTTP 200 in 54.892630s
+
+$ curl -X POST -H 'Content-Type: application/json' -d '{"q": "What is a good sourdough hydration?"}' http://127.0.0.1:10000/p/psf/requests-html/ask
+{
+  "answer": "The spirits are silent. Nothing in my records speaks to that.",
+  "refused": true,
+  "reason": "model found no answer in the evidence",
+  "sources": [],
+  "unsupported": [],
+  "claims": [],
+  "model": "backboard:openrouter/dots-studio/dots-3-note-preview:free"
+}
+HTTP 200 in 3.668307s
+
+# Notes
+# - All four lxml sentences passed the citation check. The model ended them with a
+#   citation and no full stop, so the answer reads without periods. That is the model's
+#   text: the check splits sentences after a closing citation and keeps the text as written.
+# - Without embeddings, the keyword retriever found records for the sourdough question, so
+#   the model was called and refused on its own (3.7 s). With embeddings, Revenant refuses
+#   before any model call (demo/02_ghost.txt).
+# - A first run of the same lxml question, against the same server config, got a different
+#   two-sentence answer. Its first sentence ("lxml 5.2 no longer includes the html.clean
+#   submodule ... lxml_html_clean" [#558]) was withheld because #558 never spells
+#   "html.clean", and the check requires such details verbatim. The claim is true; the
+#   check is lexical and strict, and false negatives like this are the cost.

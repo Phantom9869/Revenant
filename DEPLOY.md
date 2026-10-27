@@ -38,7 +38,12 @@ last release?", which the hybrid retriever answers from the `tags` record.
    - `BACKBOARD_API_KEY`: the ghost's model calls.
    - `SENTRY_DSN` (optional): traces for each `POST /p/<slug>/ask`.
 
-4. Health check: `GET /healthz` returns `ok`.
+4. Health check: `GET /healthz` returns `ok`. The server binds to `$PORT`, which Render
+   sets, and logs `Revenant web on http://0.0.0.0:<port>` at startup.
+
+`demo/18_render_config.txt` is a local run of this exact configuration: the server on
+`PORT=10000` with the committed bundle, no Ollama, and the ghost on Backboard. It shows
+the page status codes and two `POST /p/psf/requests-html/ask` answers.
 
 ## The ghost's model
 
