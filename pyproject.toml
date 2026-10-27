@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "revenant"
+version = "0.1.0"
+description = "Summon the ghost of an abandoned repository, find out what killed it, and bring it back."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "Phantom9869" }]
+dependencies = ["numpy>=1.26"]
+
+[project.optional-dependencies]
+sentry = ["sentry-sdk>=2.0"]
+test = ["pytest>=8"]
+
+[project.scripts]
+revenant = "revenant.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["revenant*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

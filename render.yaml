@@ -1,0 +1,26 @@
+# Render blueprint for the web UI. The ghost needs a chat model and embeddings:
+# point OLLAMA_HOST at a reachable Ollama server, or set REVENANT_GHOST_MODEL to
+# "backboard:<provider>/<model>" with BACKBOARD_API_KEY (retrieval then falls back
+# to keyword search if no embedding server is reachable).
+services:
+  - type: web
+    name: revenant
+    runtime: python
+    buildCommand: pip install .
+    startCommand: revenant serve --host 0.0.0.0
+    healthCheckPath: /healthz
+    envVars:
+      - key: REVENANT_HOME
+        value: /var/data/revenant
+      - key: OLLAMA_HOST
+        sync: false
+      - key: REVENANT_GHOST_MODEL
+        sync: false
+      - key: BACKBOARD_API_KEY
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+    disk:
+      name: revenant-data
+      mountPath: /var/data
+      sizeGB: 1
