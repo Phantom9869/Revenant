@@ -1,6 +1,6 @@
 ============================= test session starts ==============================
-platform linux -- Python 3.13.5, pytest-9.1.1, pluggy-1.7.0 -- /workspace/revenant/.venv/bin/python
-rootdir: /workspace/revenant
+platform linux -- Python 3.13.5, pytest-9.1.1, pluggy-1.7.0 -- .venv/bin/python
+rootdir: .
 configfile: pyproject.toml
 testpaths: tests
 collecting ... collected 80 items

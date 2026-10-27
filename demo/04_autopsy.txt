@@ -50,4 +50,4 @@ lxml 5.2.0 (2024) moved lxml.html.clean into the separate lxml_html_clean packag
 | PyPI | **stale** | latest release requests-html 0.10.0 on 2019-02-17; requires_python: >=3.6.0 |
 
 
-Written to /workspace/revenant/.revenant/psf__requests-html/reports/death_certificate.md
+Written to .revenant/psf__requests-html/reports/death_certificate.md

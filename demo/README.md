@@ -2,7 +2,8 @@
 
 Real outputs from Revenant's runs on `psf/requests-html`, captured on the dev box on 2026-10-27
 (UTC; CPU only, Ollama locally, Backboard for the hosted models). Nothing here is edited except
-where a NOTE says so, or where a `$ command` header line was added above the output.
+where a NOTE says so, where a `$ command` header line was added above the output, or where
+the dev box's absolute checkout path was shortened to a repo-relative one (`.revenant/...`).
 
 | file | what |
 |---|---|

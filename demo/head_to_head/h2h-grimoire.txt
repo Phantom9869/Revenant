@@ -179,4 +179,4 @@ $ revenant resurrect psf/requests-html --name h2h-grimoire --surgeon none --no-a
 ```
 
 
-Revived tree: /workspace/revenant/.revenant/psf__requests-html/h2h-grimoire (branch revenant/resurrection), 25s
+Revived tree: .revenant/psf__requests-html/h2h-grimoire (branch revenant/resurrection), 25s

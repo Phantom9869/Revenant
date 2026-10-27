@@ -211,6 +211,6 @@ $ revenant resurrect psf/requests-html
 | `qwen2.5-coder:7b` | 0 | 0 | 0 | 0.0s | not reported |
 
 
-Revived tree: /workspace/revenant/.revenant/psf__requests-html/fork (branch revenant/resurrection), 76s
+Revived tree: .revenant/psf__requests-html/fork (branch revenant/resurrection), 76s
 [Revenant] trace 86832758635745d7aa9b64b1dfb8dbb5 flushed to Sentry
 

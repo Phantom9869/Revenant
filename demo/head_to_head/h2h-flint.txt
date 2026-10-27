@@ -55,7 +55,7 @@ $ revenant resurrect psf/requests-html --name h2h-flint --no-grimoire --no-after
 ### 2. Surgeon's edit for test_async_file_get (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 97.7s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
   @pytest.mark.asyncio
   async def te
 - **Verdict:** regressed 24 passing test(s): test_absolute_links[http://example.com-test.html-http://example.com/test.html], test_absolute_links[http://example.com/-//xkcd.com/about/-http://xkcd.com/about/], test_absolute_links[http://example.com/-http://xkcd.com/about/-http://xkcd.com/about/] and 21 more
@@ -100,7 +100,7 @@ $ revenant resurrect psf/requests-html --name h2h-flint --no-grimoire --no-after
 ### 4. Surgeon's edit for test_async_file_get (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 52.6s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
   @pytest.mark.asyncio
   async def te
 - **Verdict:** regressed 3 passing test(s): test_bare_render, test_browser_process, test_render
@@ -122,7 +122,7 @@ $ revenant resurrect psf/requests-html --name h2h-flint --no-grimoire --no-after
 ### 5. Surgeon's edit for test_async_links (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 82.4s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
   @pytest.mark.asyncio
   async def te
 - **Verdict:** regressed 3 passing test(s): test_bare_render, test_browser_process, test_render
@@ -144,7 +144,7 @@ $ revenant resurrect psf/requests-html --name h2h-flint --no-grimoire --no-after
 ### 6. Surgeon's edit for test_async_render (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 77.0s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
   @pytest.mark.render
   @pytest.mark
 - **Verdict:** regressed 3 passing test(s): test_bare_render, test_browser_process, test_render
@@ -190,7 +190,7 @@ $ revenant resurrect psf/requests-html --name h2h-flint --no-grimoire --no-after
 ### 8. Surgeon's edit for test_async_links (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 78.7s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
   @pytest.mark.asyncio
   async def te
 - **Verdict:** no improvement (passing 27 -> 27, failing 3 -> 3)
@@ -212,7 +212,7 @@ $ revenant resurrect psf/requests-html --name h2h-flint --no-grimoire --no-after
 ### 9. Surgeon's edit for test_async_render (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 61.1s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
   @pytest.mark.render
   @pytest.mark
 - **Verdict:** no improvement (passing 27 -> 27, failing 3 -> 3)
@@ -233,15 +233,15 @@ $ revenant resurrect psf/requests-html --name h2h-flint --no-grimoire --no-after
 
 ## Still dead
 
-- `tests.test_requests_html::test_async_file_get`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
+- `tests.test_requests_html::test_async_file_get`: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
   @pytest.mark.asyncio
   async def test_async_file_get(async_get):
       r = 
-- `tests.test_requests_html::test_async_links`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
+- `tests.test_requests_html::test_async_links`: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
   @pytest.mark.asyncio
   async def test_async_links(async_get):
       r = awa
-- `tests.test_requests_html::test_async_render`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
+- `tests.test_requests_html::test_async_render`: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
   @pytest.mark.render
   @pytest.mark.asyncio
   async def test_async_render(a
@@ -254,4 +254,4 @@ $ revenant resurrect psf/requests-html --name h2h-flint --no-grimoire --no-after
 [Revenant] trace 5b108bd8201947018d7eef10484e15aa flushed to Sentry
 
 
-Revived tree: /workspace/revenant/.revenant/psf__requests-html/h2h-flint (branch revenant/resurrection), 719s
+Revived tree: .revenant/psf__requests-html/h2h-flint (branch revenant/resurrection), 719s

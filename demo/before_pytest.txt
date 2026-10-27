@@ -1,7 +1,7 @@
 
 ==================================== ERRORS ====================================
 ___________________ ERROR collecting tests/test_internet.py ____________________
-ImportError while importing test module '/workspace/revenant/.revenant/psf__requests-html/autopsy/tree/tests/test_internet.py'.
+ImportError while importing test module '.revenant/psf__requests-html/autopsy/tree/tests/test_internet.py'.
 Hint: make sure your test modules/packages have valid Python names.
 Traceback:
 /usr/lib/python3.13/importlib/__init__.py:88: in import_module
@@ -16,7 +16,7 @@ requests_html.py:15: in <module>
 E   ImportError: lxml.html.clean module is now a separate project lxml_html_clean.
 E   Install lxml[html-clean] or lxml_html_clean directly.
 _________________ ERROR collecting tests/test_requests_html.py _________________
-ImportError while importing test module '/workspace/revenant/.revenant/psf__requests-html/autopsy/tree/tests/test_requests_html.py'.
+ImportError while importing test module '.revenant/psf__requests-html/autopsy/tree/tests/test_requests_html.py'.
 Hint: make sure your test modules/packages have valid Python names.
 Traceback:
 /usr/lib/python3.13/importlib/__init__.py:88: in import_module

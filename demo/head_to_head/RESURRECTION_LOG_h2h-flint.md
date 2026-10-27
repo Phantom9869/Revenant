@@ -43,7 +43,7 @@
 ### 2. Surgeon's edit for test_async_file_get (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 97.7s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
   @pytest.mark.asyncio
   async def te
 - **Verdict:** regressed 24 passing test(s): test_absolute_links[http://example.com-test.html-http://example.com/test.html], test_absolute_links[http://example.com/-//xkcd.com/about/-http://xkcd.com/about/], test_absolute_links[http://example.com/-http://xkcd.com/about/-http://xkcd.com/about/] and 21 more
@@ -88,7 +88,7 @@
 ### 4. Surgeon's edit for test_async_file_get (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 52.6s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
   @pytest.mark.asyncio
   async def te
 - **Verdict:** regressed 3 passing test(s): test_bare_render, test_browser_process, test_render
@@ -110,7 +110,7 @@
 ### 5. Surgeon's edit for test_async_links (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 82.4s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
   @pytest.mark.asyncio
   async def te
 - **Verdict:** regressed 3 passing test(s): test_bare_render, test_browser_process, test_render
@@ -132,7 +132,7 @@
 ### 6. Surgeon's edit for test_async_render (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 77.0s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
   @pytest.mark.render
   @pytest.mark
 - **Verdict:** regressed 3 passing test(s): test_bare_render, test_browser_process, test_render
@@ -178,7 +178,7 @@
 ### 8. Surgeon's edit for test_async_links (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 78.7s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
   @pytest.mark.asyncio
   async def te
 - **Verdict:** no improvement (passing 27 -> 27, failing 3 -> 3)
@@ -200,7 +200,7 @@
 ### 9. Surgeon's edit for test_async_render (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/recursive/flint-v1.0:free (model time 61.1s)
-- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
+- **Why:** Proposed by backboard:openrouter/recursive/flint-v1.0:free for: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
   @pytest.mark.render
   @pytest.mark
 - **Verdict:** no improvement (passing 27 -> 27, failing 3 -> 3)
@@ -221,15 +221,15 @@
 
 ## Still dead
 
-- `tests.test_requests_html::test_async_file_get`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
+- `tests.test_requests_html::test_async_file_get`: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 38
   @pytest.mark.asyncio
   async def test_async_file_get(async_get):
       r = 
-- `tests.test_requests_html::test_async_links`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
+- `tests.test_requests_html::test_async_links`: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 90
   @pytest.mark.asyncio
   async def test_async_links(async_get):
       r = awa
-- `tests.test_requests_html::test_async_render`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
+- `tests.test_requests_html::test_async_render`: failed on setup with "file .revenant/psf__requests-html/h2h-flint/tests/test_requests_html.py, line 182
   @pytest.mark.render
   @pytest.mark.asyncio
   async def test_async_render(a

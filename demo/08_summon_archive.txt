@@ -1,4 +1,4 @@
-Summoning psf/requests-html into /workspace/revenant/.revenant/psf__requests-html
+Summoning psf/requests-html into .revenant/psf__requests-html
   repo                 1
   issues             598
   issue_comments    1296

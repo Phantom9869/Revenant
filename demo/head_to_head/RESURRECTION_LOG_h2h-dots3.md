@@ -44,7 +44,7 @@
 ### 2. Surgeon's edit for test_async_file_get (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/dots-studio/dots-3-note-preview:free (model time 39.2s)
-- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 38
+- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file .revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 38
   @pytest.mark.asyncio
   async def te
 - **Verdict:** regressed 3 passing test(s): test_bare_render, test_browser_process, test_render
@@ -87,7 +87,7 @@
 ### 4. Surgeon's edit for test_async_file_get (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/dots-studio/dots-3-note-preview:free (model time 81.5s)
-- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 38
+- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file .revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 38
   @pytest.mark.asyncio
   async def te
 - **Verdict:** regressed 3 passing test(s): test_bare_render, test_browser_process, test_render
@@ -109,7 +109,7 @@
 ### 5. Surgeon's edit for test_async_links (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/dots-studio/dots-3-note-preview:free (model time 44.3s)
-- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 90
+- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file .revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 90
   @pytest.mark.asyncio
   async def te
 - **Verdict:** regressed 3 passing test(s): test_bare_render, test_browser_process, test_render
@@ -131,7 +131,7 @@
 ### 6. Surgeon's edit for test_async_render (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/dots-studio/dots-3-note-preview:free (model time 104.3s)
-- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 182
+- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file .revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 182
   @pytest.mark.render
   @pytest.mark
 - **Verdict:** regressed 3 passing test(s): test_bare_render, test_browser_process, test_render
@@ -177,7 +177,7 @@
 ### 8. Surgeon's edit for test_async_links (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/dots-studio/dots-3-note-preview:free (model time 138.7s)
-- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 90
+- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file .revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 90
   @pytest.mark.asyncio
   async def te
 - **Verdict:** no improvement (passing 27 -> 27, failing 3 -> 3)
@@ -199,7 +199,7 @@
 ### 9. Surgeon's edit for test_async_render (REVERTED)
 
 - **Source:** surgeon:backboard:openrouter/dots-studio/dots-3-note-preview:free (model time 49.5s)
-- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 182
+- **Why:** Proposed by backboard:openrouter/dots-studio/dots-3-note-preview:free for: failed on setup with "file .revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 182
   @pytest.mark.render
   @pytest.mark
 - **Verdict:** no improvement (passing 27 -> 27, failing 3 -> 3)
@@ -220,15 +220,15 @@
 
 ## Still dead
 
-- `tests.test_requests_html::test_async_file_get`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 38
+- `tests.test_requests_html::test_async_file_get`: failed on setup with "file .revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 38
   @pytest.mark.asyncio
   async def test_async_file_get(async_get):
       r = 
-- `tests.test_requests_html::test_async_links`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 90
+- `tests.test_requests_html::test_async_links`: failed on setup with "file .revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 90
   @pytest.mark.asyncio
   async def test_async_links(async_get):
       r = awa
-- `tests.test_requests_html::test_async_render`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 182
+- `tests.test_requests_html::test_async_render`: failed on setup with "file .revenant/psf__requests-html/h2h-dots3/tests/test_requests_html.py, line 182
   @pytest.mark.render
   @pytest.mark.asyncio
   async def test_async_render(a

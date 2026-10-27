@@ -59,7 +59,7 @@
 ### 4. Surgeon's edit for test_async_render (REVERTED)
 
 - **Source:** surgeon:qwen2.5-coder:7b (model time 7.0s)
-- **Why:** Proposed by qwen2.5-coder:7b for: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-qwen7b/tests/test_requests_html.py, line 182
+- **Why:** Proposed by qwen2.5-coder:7b for: failed on setup with "file .revenant/psf__requests-html/h2h-qwen7b/tests/test_requests_html.py, line 182
   @pytest.mark.render
   @pytest.mar
 - **Verdict:** no improvement (passing 25 -> 25, failing 5 -> 5)
@@ -115,15 +115,15 @@
 
 ## Still dead
 
-- `tests.test_requests_html::test_async_file_get`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-qwen7b/tests/test_requests_html.py, line 38
+- `tests.test_requests_html::test_async_file_get`: failed on setup with "file .revenant/psf__requests-html/h2h-qwen7b/tests/test_requests_html.py, line 38
   @pytest.mark.asyncio
   async def test_async_file_get(async_get):
       r =
-- `tests.test_requests_html::test_async_links`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-qwen7b/tests/test_requests_html.py, line 90
+- `tests.test_requests_html::test_async_links`: failed on setup with "file .revenant/psf__requests-html/h2h-qwen7b/tests/test_requests_html.py, line 90
   @pytest.mark.asyncio
   async def test_async_links(async_get):
       r = aw
-- `tests.test_requests_html::test_async_render`: failed on setup with "file /workspace/revenant/.revenant/psf__requests-html/h2h-qwen7b/tests/test_requests_html.py, line 182
+- `tests.test_requests_html::test_async_render`: failed on setup with "file .revenant/psf__requests-html/h2h-qwen7b/tests/test_requests_html.py, line 182
   @pytest.mark.render
   @pytest.mark.asyncio
   async def test_async_render(
