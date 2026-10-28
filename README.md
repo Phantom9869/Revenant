@@ -25,6 +25,9 @@ All numbers in this README come from runs saved under [`demo/`](demo/). The scre
 
 ![The Revenant web UI: the overview of psf/requests-html](docs/web-overview.png)
 
+**Live demo:** <https://revenant-zaq3.onrender.com> (Render free tier: the first request after it
+has been idle can take about 30–60 s; see [Live on Render](#live-on-render-free-tier)).
+
 ## The three rites
 
 ### 1. Summon: build the ghost's memory
@@ -235,9 +238,17 @@ and each sentence's verdict. The JSON API is `POST /p/<owner>/<repo>/ask` with `
 | ![home](docs/web-home.png) | ![certificate](docs/web-certificate.png) |
 | ![resurrection timeline](docs/web-resurrection.png) | ![ask](docs/web-ask.png) |
 
-### Deploying on Render (free tier)
+### Live on Render (free tier)
 
-[`render.yaml`](render.yaml) is a Render blueprint for one free web service named `Revenant`.
+**Live: <https://revenant-zaq3.onrender.com>** (the séance room for `psf/requests-html`).
+
+- The free tier sleeps when idle, so the first request after a quiet spell can take about 30–60 s.
+- The ghost runs on a free preview model on Backboard (`dots-3-note-preview:free`), which can be
+  rate-limited or withdrawn upstream. If a call fails, the page says "The séance was interrupted".
+- Sentry is not configured on the live site, so it sends no traces.
+- Auto-deploy is not configured; a redeploy after a push is triggered by hand in Render.
+
+[`render.yaml`](render.yaml) is the Render blueprint for this one free web service named `Revenant`.
 The free tier has no disk and no GPU, so the deployed site is read-only. It serves a bundle made
 with `revenant export psf/requests-html --to deploy/bundle --no-vectors` (committed, 5.2 MB),
 the ghost runs on Backboard, and retrieval is keyword-only. `BACKBOARD_API_KEY` (and optionally
@@ -292,11 +303,11 @@ revenant ask  [cli]  5.47s
 - Browserbase: one real Wayback fetch through the Fetch API, cached; archived docs ingested and cited by the ghost
 - Sentry: real traces sent from `ask`, `autopsy` and `resurrect`; the span tree captured locally; span structure covered by an offline test
 - web UI against real data, and the Render configuration run locally (bundle, keyword retrieval, ghost on Backboard, `$PORT`)
+- the live Render deployment from `render.yaml`: `/healthz`, `/`, `/p/psf/requests-html`, `/certificate` and `/resurrection` return 200, and a live `POST /p/psf/requests-html/ask` answered the lxml question with per-sentence citation verdicts (the checker flagged one sentence as unsupported)
 - 81 unit tests (`pytest`, output in [`demo/12_revenant_tests.txt`](demo/12_revenant_tests.txt))
 
 **Implemented but untested:**
 
-- The actual Render deployment from `render.yaml` (the service has not been created)
 - Paid Backboard models (the account has no chat credit)
 - The generated GitHub Actions workflow (written into the fork, never run; the fork was never pushed)
 - Patients other than requests-html
