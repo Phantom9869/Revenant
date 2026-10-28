@@ -227,16 +227,36 @@ Data goes to `$REVENANT_HOME` (default `./.revenant`). Commits in the revived fo
 revenant serve --port 8765
 ```
 
-A dark, quiet séance room. It has a home page listing the summoned patients, and for each patient
+A dark, quiet séance room by default, with a parchment-coloured light theme one click away. It has a home page listing the summoned patients, and for each patient
 an overview, the death certificate, the resurrection timeline (each operation with its verdict
 and test counts, then the Python matrix and aftercare) and an ask box. Answers show their sources
 and each sentence's verdict. The JSON API is `POST /p/<owner>/<repo>/ask` with `{"q": "..."}`
 ([`demo/10_web.txt`](demo/10_web.txt)). It uses the standard library only.
 
+**Light and dark.** The moon/sun button in the header switches themes. On a first visit the page
+follows the system's `prefers-color-scheme` (dark when there's no preference); after a click, the
+choice is saved in `localStorage` and wins on every later visit. A tiny inline script in `<head>`
+sets the theme before the stylesheet paints, so there is no flash of the wrong one, and without
+JavaScript the CSS falls back to the system setting. Every colour is a CSS variable, and
+[`tests/test_web.py`](tests/test_web.py) checks that each text colour meets WCAG AA contrast
+(4.5:1) on every surface it's drawn on, in both themes. [`scripts/check_theme.mjs`](scripts/check_theme.mjs)
+drives headless Chrome through first visit, click, and reload
+([`demo/19_theme_toggle.txt`](demo/19_theme_toggle.txt)). No fonts, icons or scripts are loaded from
+anywhere else.
+
+![The overview page in the dark and light themes, side by side](docs/web-theme-compare.png)
+
 | | |
 |---|---|
 | ![home](docs/web-home.png) | ![certificate](docs/web-certificate.png) |
 | ![resurrection timeline](docs/web-resurrection.png) | ![ask](docs/web-ask.png) |
+| ![overview, light theme](docs/web-overview-light.png) | ![certificate, light theme](docs/web-certificate-light.png) |
+| ![resurrection timeline, light theme](docs/web-resurrection-light.png) | ![ask, light theme](docs/web-ask-light.png) |
+
+The light-theme answer is a fresh one from the hosted model on Backboard, saved as
+[`demo/20_web_ask.html`](demo/20_web_ask.html). Its second sentence ("an ImportError is raised") is
+true but was withheld, because neither "ImportError" nor "lxml.html.clean" appears in the comment
+it cited: the word-matching check is strict, as described above.
 
 ### Live on Render (free tier)
 
@@ -304,7 +324,7 @@ revenant ask  [cli]  5.47s
 - Sentry: real traces sent from `ask`, `autopsy` and `resurrect`; the span tree captured locally; span structure covered by an offline test
 - web UI against real data, and the Render configuration run locally (bundle, keyword retrieval, ghost on Backboard, `$PORT`)
 - the live Render deployment from `render.yaml`: `/healthz`, `/`, `/p/psf/requests-html`, `/certificate` and `/resurrection` return 200, and a live `POST /p/psf/requests-html/ask` answered the lxml question with per-sentence citation verdicts (the checker flagged one sentence as unsupported)
-- 81 unit tests (`pytest`, output in [`demo/12_revenant_tests.txt`](demo/12_revenant_tests.txt))
+- 88 unit tests (`pytest`, output in [`demo/12_revenant_tests.txt`](demo/12_revenant_tests.txt))
 
 **Implemented but untested:**
 
@@ -359,7 +379,7 @@ revenant/
 tests/                unit tests
 demo/                 real outputs from the runs described above
 docs/                 screenshots (headless Chromium)
-scripts/              screenshots.py
+scripts/              screenshots.py, check_theme.mjs
 deploy/bundle/        exported patient data for the Render deploy
 render.yaml, DEPLOY.md  Render free-tier blueprint and notes
 ```
