@@ -386,7 +386,7 @@ render.yaml, DEPLOY.md  Render free-tier blueprint and notes
 
 ## Built with
 
-Built with an AI coding assistant; I directed the project and tested and reviewed the result. Every number in this README comes from a run saved in [`demo/`](demo/).
+Built with Grok Bot, an AI coding assistant; I directed the project and tested and reviewed the result. Every number in this README comes from a run saved in [`demo/`](demo/).
 
 ## License
 
