@@ -1,6 +1,7 @@
 """Render the PNGs in docs/ with headless Chrome.
 
-  python scripts/screenshots.py url  <url> <out.png> [--height N]   # a page of a running `revenant serve`
+  python scripts/screenshots.py url  <url> <out.png> [--height N] [--theme dark|light]   # a page of a running `revenant serve`
+  python scripts/screenshots.py compare <dark.png> <light.png> <out.png>   # the two themes side by side
   python scripts/screenshots.py term <capture.txt> <out.png> --title "..." [--lines A:B] [--command "..."]
 
 Terminal images are drawn from real captured output files (demo/*.txt), never retyped.
@@ -20,12 +21,41 @@ DOCS = Path(__file__).resolve().parent.parent / "docs"
 CHROME = os.environ.get("CHROME") or shutil.which("google-chrome") or shutil.which("chromium") or "chromium"
 
 
-def shoot(url: str, out: Path, width: int = 1280, height: int = 900) -> None:
+# The web UI picks its theme from prefers-color-scheme on a first visit (a fresh headless profile
+# has no saved choice), so each theme is shot by telling Blink which scheme the "system" prefers.
+SCHEME = {"dark": ("0", "0b0c0eff"), "light": ("1", "f4efe4ff")}
+
+
+def shoot(url: str, out: Path, width: int = 1280, height: int = 900, theme: str = "dark") -> None:
+    scheme, background = SCHEME[theme]
     subprocess.run([CHROME, "--headless", "--no-sandbox", "--disable-gpu", "--hide-scrollbars",
                     "--force-device-scale-factor=1", f"--window-size={width},{height}",
-                    "--default-background-color=0b0c0eff", f"--screenshot={out}", url],
+                    f"--blink-settings=preferredColorScheme={scheme}",
+                    f"--default-background-color={background}", f"--screenshot={out}", url],
                    check=True, capture_output=True, timeout=120)
-    print(f"wrote {out} ({width}x{height})")
+    print(f"wrote {out} ({width}x{height}, {theme})")
+
+
+def png_size(path: Path) -> tuple[int, int]:
+    head = path.read_bytes()[:24]
+    return int.from_bytes(head[16:20], "big"), int.from_bytes(head[20:24], "big")
+
+
+def compare(dark: Path, light: Path, out: Path, width: int = 1600) -> None:
+    """Two screenshots of the same page, dark on the left and light on the right, with a label on each."""
+    w, h = png_size(dark)
+    height = round(h * (width / 2) / w)
+    doc = ("<!doctype html><meta charset=utf-8><style>body{margin:0;display:flex;height:100vh;font:600 12px/1 sans-serif;"
+           "letter-spacing:.2em;text-transform:uppercase}div{flex:1;position:relative;overflow:hidden}"
+           "img{width:100%;display:block}span{position:absolute;bottom:16px;padding:7px 11px;border-radius:999px}"
+           ".d{background:#0b0c0e}.d span{right:16px;color:#c9a66b;border:1px solid #4a3f2c;background:#111317}"
+           ".l{background:#f4efe4;border-left:2px solid #c9a66b}.l span{right:16px;color:#835d1c;border:1px solid #d6bf94;background:#fbf8f1}</style>"
+           f"<div class=d><img src='file://{dark.resolve()}'><span>Dark</span></div>"
+           f"<div class=l><img src='file://{light.resolve()}'><span>Light</span></div>")
+    with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False) as f:
+        f.write(doc)
+    shoot(f"file://{f.name}", out, width, height)
+    os.unlink(f.name)
 
 
 TERM_CSS = """body{margin:0;background:#0b0c0e;padding:28px}
@@ -79,6 +109,11 @@ def main():
     w.add_argument("url")
     w.add_argument("out")
     w.add_argument("--height", type=int, default=900)
+    w.add_argument("--theme", choices=sorted(SCHEME), default="dark")
+    c = sub.add_parser("compare")
+    c.add_argument("dark", type=Path)
+    c.add_argument("light", type=Path)
+    c.add_argument("out", type=Path)
     t = sub.add_parser("term")
     t.add_argument("capture", type=Path)
     t.add_argument("out", type=Path)
@@ -88,7 +123,9 @@ def main():
     t.add_argument("--width", type=int, default=1280)
     a = ap.parse_args()
     if a.cmd == "url":
-        shoot(a.url, Path(a.out), height=a.height)
+        shoot(a.url, Path(a.out), height=a.height, theme=a.theme)
+    elif a.cmd == "compare":
+        compare(a.dark, a.light, a.out)
     else:
         term(a.capture, a.out, a.title, a.lines, a.command, a.width)
 
