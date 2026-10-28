@@ -2,7 +2,7 @@
 
 *A séance for abandoned open-source software.*
 
-> Project started **Oct 27, 2026**.
+> Project started **Oct 27, 2026**. Submitted to DEV's Hacktoberfest Open-Source AI Challenge, Week 4: Ghost in the Machine. Read the write-up: [Revenant: I held a séance for a dead Python library, and it came back passing its tests](https://dev.to/bladeharper_ec7070d6e28be/revenant-i-held-a-seance-for-a-dead-python-library-and-it-came-back-passing-its-tests-43md).
 
 Every dead repository still has a voice: thousands of commits, issues, reviews and docs written by
 the people who kept it alive. Revenant gathers that voice, lets you **talk to the ghost** of the
@@ -383,6 +383,10 @@ scripts/              screenshots.py, check_theme.mjs
 deploy/bundle/        exported patient data for the Render deploy
 render.yaml, DEPLOY.md  Render free-tier blueprint and notes
 ```
+
+## Built with
+
+Built with an AI coding assistant; I directed the project and tested and reviewed the result. Every number in this README comes from a run saved in [`demo/`](demo/).
 
 ## License
 
