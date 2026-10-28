@@ -1,8 +1,23 @@
 # Deploying the Revenant web UI on Render (free tier)
 
-Status: **prepared, not deployed.** `render.yaml` and the bundle below have been checked
-locally in the same configuration (keyword retrieval, Backboard ghost, no Ollama); the
-service itself has not been created on Render yet.
+Status: **deployed.** Live at <https://revenant-zaq3.onrender.com>, created from
+`render.yaml` as a Blueprint on Render's free plan, with this public repo as the source.
+
+Checked on the live service: the first deploy took 1m21s; `GET /healthz` returns 200;
+`/`, `/p/psf/requests-html`, `/certificate` and `/resurrection` return 200; and a live
+`POST /p/psf/requests-html/ask` answered the lxml question with per-sentence citation
+verdicts (the checker flagged one sentence as unsupported).
+
+Caveats:
+
+- The free tier sleeps when idle, so the first request after a quiet spell can take
+  about 30–60 s while the service wakes up.
+- The ghost uses a free preview model on Backboard (see below), which can be
+  rate-limited or withdrawn upstream.
+- `SENTRY_DSN` is not set on the live service, so it sends no traces.
+- Auto-deploy is not configured (the repo is used as a public git source, without the
+  Render GitHub app), so after a push a redeploy has to be started by hand in the
+  Render dashboard (**Manual Deploy → Deploy latest commit**).
 
 ## What runs where
 
@@ -30,11 +45,12 @@ last release?", which the hybrid retriever answers from the `tags` record.
    git add deploy/bundle && git commit -m "Refresh deploy bundle"
    ```
 
-2. In Render: **New → Blueprint**, pick the `Phantom9869/Revenant` repo. Render reads
+2. In Render: **New → Blueprint**, pick the `Phantom9869/Revenant` repo (the live service
+   uses the public repo URL as its source). Render reads
    `render.yaml` and creates one free web service named `Revenant`.
 
-3. Set the two secret env vars when Render asks (they are `sync: false`, so they never
-   live in the repo):
+3. Set the secret env vars when Render asks (they are `sync: false`, so they never
+   live in the repo). On the live service only `BACKBOARD_API_KEY` is set:
    - `BACKBOARD_API_KEY`: the ghost's model calls.
    - `SENTRY_DSN` (optional): traces for each `POST /p/<slug>/ask`.
 
