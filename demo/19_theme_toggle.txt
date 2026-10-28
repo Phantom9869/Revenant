@@ -1,0 +1,7 @@
+$ node --experimental-websocket scripts/check_theme.mjs 9333 http://127.0.0.1:8817/p/psf/requests-html
+# server: REVENANT_HOME=deploy/bundle revenant serve --port 8817 (2026-10-28 18:12 IST)
+first visit, system dark: {"theme":"dark","stored":null,"label":"Switch to light theme","bg":"rgb(11, 12, 14)"}
+first visit, system light: {"theme":"light","stored":null,"label":"Switch to dark theme","bg":"rgb(244, 239, 228)"}
+after click: {"theme":"dark","stored":"dark","label":"Switch to light theme","bg":"rgb(11, 12, 14)"}
+reload with system light (stored choice wins): {"theme":"dark","stored":"dark","label":"Switch to light theme","bg":"rgb(11, 12, 14)"}
+focusable: theme-toggle
