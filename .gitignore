@@ -9,3 +9,6 @@ build/
 dist/
 POST.md
 body.md
+*.bundle
+.ruff_cache/
+.DS_Store
