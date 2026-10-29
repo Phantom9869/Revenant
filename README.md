@@ -218,6 +218,8 @@ export GITHUB_TOKEN=...           # optional, raises the API rate limit
 revenant summon psf/requests-html
 ```
 
+Revenant's own tests run offline with `pytest -q` (see [`CONTRIBUTING.md`](CONTRIBUTING.md)).
+
 Data goes to `$REVENANT_HOME` (default `./.revenant`). Commits in the revived fork use
 `REVENANT_GIT_NAME` / `REVENANT_GIT_EMAIL` when set.
 
@@ -231,7 +233,8 @@ A dark, quiet séance room by default, with a parchment-coloured light theme one
 an overview, the death certificate, the resurrection timeline (each operation with its verdict
 and test counts, then the Python matrix and aftercare) and an ask box. Answers show their sources
 and each sentence's verdict. The JSON API is `POST /p/<owner>/<repo>/ask` with `{"q": "..."}`
-([`demo/10_web.txt`](demo/10_web.txt)). It uses the standard library only.
+([`demo/10_web.txt`](demo/10_web.txt)). A malformed request gets a 400 (413 above 10,000 bytes),
+and a failed model call a 502 with `{"error": "..."}`. It uses the standard library only.
 
 **Light and dark.** The moon/sun button in the header switches themes. On a first visit the page
 follows the system's `prefers-color-scheme` (dark when there's no preference); after a click, the
@@ -324,7 +327,8 @@ revenant ask  [cli]  5.47s
 - Sentry: real traces sent from `ask`, `autopsy` and `resurrect`; the span tree captured locally; span structure covered by an offline test
 - web UI against real data, and the Render configuration run locally (bundle, keyword retrieval, ghost on Backboard, `$PORT`)
 - the live Render deployment from `render.yaml`: `/healthz`, `/`, `/p/psf/requests-html`, `/certificate` and `/resurrection` return 200, and a live `POST /p/psf/requests-html/ask` answered the lxml question with per-sentence citation verdicts (the checker flagged one sentence as unsupported)
-- 88 unit tests (`pytest`, output in [`demo/12_revenant_tests.txt`](demo/12_revenant_tests.txt))
+- 103 unit tests (`pytest`, offline, no keys needed). The run saved in
+  [`demo/12_revenant_tests.txt`](demo/12_revenant_tests.txt) is from the submitted version, which had 88
 
 **Implemented but untested:**
 
@@ -348,6 +352,10 @@ revenant ask  [cli]  5.47s
   about 20–55 s, and surgeon calls 53–76 s on average. Free preview models can disappear.
 - Each head-to-head contender ran once. Model output varies between runs.
 - The sandbox needs `bwrap`. Without it, tests run unsandboxed and the certificate says so.
+- The sandbox cuts off the network and makes everything outside the working tree read-only, but
+  the patient's tests can still *read* the host's files, and the install step (which runs the
+  package's build code) happens outside the sandbox, with network.
+  Treat a patient's code as untrusted: run Revenant as a user without secrets, or in a VM or container.
 - Render tests need Chromium. Pyppeteer's Chromium must be downloaded before the sandboxed run,
   because the sandbox has no network.
 - `web.archive.org` was unreachable from the dev box directly, and Browserbase's un-proxied fetches of
@@ -376,7 +384,7 @@ revenant/
   report.py           resurrection log
   integrations/       Sentry tracing, Wayback + Browserbase
   web/app.py          stdlib web UI and JSON API
-tests/                unit tests
+tests/                unit tests (offline; models and web services stubbed)
 demo/                 real outputs from the runs described above
 docs/                 screenshots (headless Chromium)
 scripts/              screenshots.py, check_theme.mjs
