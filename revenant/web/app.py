@@ -229,6 +229,7 @@ EXAMPLES = ["Why does importing requests_html fail with lxml 5.2?",
             "Why did test_containing start expecting 192 elements?"]
 
 e = html.escape
+MAX_BODY = 10_000   # bytes; a question is cut to 500 characters anyway
 
 
 def _json(path):
@@ -431,6 +432,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "no-referrer")
         self.end_headers()
         self.wfile.write(body)
 
@@ -465,14 +468,26 @@ class Handler(BaseHTTPRequestHandler):
         p = m and self._patient(m.group(1))
         if not p:
             return self._send(404, b"not found", "text/plain")
-        n = int(self.headers.get("Content-Length") or 0)
-        raw = self.rfile.read(min(n, 10_000)).decode()
+        try:
+            n = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            n = -1
+        if not 0 <= n <= MAX_BODY:
+            self.close_connection = True   # the unread body must not be taken for the next request
+            return self._send(413 if n > MAX_BODY else 400, b"bad Content-Length", "text/plain")
         wants_json = "json" in (self.headers.get("Content-Type") or "")
         try:
-            q = ((lambda d: d.get("q") or d.get("question") or "")(json.loads(raw)) if wants_json
-                 else urllib.parse.parse_qs(raw).get("q", [""])[0]).strip()[:500]
-        except ValueError:
-            return self._send(400, b"bad request", "text/plain")
+            raw = self.rfile.read(n).decode("utf-8")
+            if wants_json:
+                d = json.loads(raw)
+                q = (d.get("q") or d.get("question") or "") if isinstance(d, dict) else None
+            else:
+                q = urllib.parse.parse_qs(raw).get("q", [""])[0]
+        except ValueError:   # includes UnicodeDecodeError and JSONDecodeError
+            q = None
+        if not isinstance(q, str):
+            return self._send(400, b"bad request: send a form field or JSON string named q", "text/plain")
+        q = q.strip()[:500]
         if not q:
             return self._send(400, b"empty question", "text/plain")
         from ..cli import build_ghost
