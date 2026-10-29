@@ -20,6 +20,29 @@ def test_add_is_idempotent_and_keyword_search_ranks(tmp_path):
     assert m.count() == {"issue": 3}
 
 
+
+def test_memory_can_be_shared_between_threads(tmp_path):
+    """The web server caches one ghost per patient and answers each request on a new thread."""
+    import threading
+    m = Memory(tmp_path / "g.db")
+    m.add([d(i, f"lxml import error number {i}") for i in range(20)])
+    errors, gate = [], threading.Barrier(8)
+
+    def search():
+        gate.wait()   # all threads alive at once, so none can reuse the creating thread's id
+        try:
+            for _ in range(20):
+                assert m.keyword("lxml import", 5) and m.get("issue:3")
+        except Exception as e:   # pragma: no cover - the failure being guarded against
+            errors.append(e)
+
+    threads = [threading.Thread(target=search) for _ in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert errors == []
+
 def test_vectors_roundtrip_and_semantic_search(tmp_path):
     m = Memory(tmp_path / "g.db")
     m.add([d(1, "alpha"), d(2, "beta")])

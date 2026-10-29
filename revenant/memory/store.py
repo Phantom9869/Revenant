@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -32,58 +33,77 @@ class Doc:
 
 
 class Memory:
+    """One SQLite connection, safe to share between threads.
+
+    The web UI caches one ghost per patient and serves each request on its own thread
+    (ThreadingHTTPServer), so the connection is opened with check_same_thread=False and
+    every use of it goes through one lock.
+    """
+
     def __init__(self, path: Path):
         self.path = Path(path)
-        self.db = sqlite3.connect(self.path)
-        self.db.executescript(SCHEMA)
+        self.db = sqlite3.connect(self.path, check_same_thread=False)
+        self.lock = threading.RLock()
+        with self.lock:
+            self.db.executescript(SCHEMA)
 
     def close(self):
-        self.db.close()
+        with self.lock:
+            self.db.close()
 
     # -- writing ---------------------------------------------------------
     def add(self, docs: list[Doc]) -> int:
         n = 0
-        for d in docs:
-            cur = self.db.execute("INSERT OR IGNORE INTO docs VALUES (?,?,?,?,?,?,?,?)",
-                                  (d.id, d.kind, d.ref, d.url, d.title, d.author, d.date, d.text))
-            if cur.rowcount:
-                self.db.execute("INSERT INTO docs_fts(id,title,text) VALUES (?,?,?)",
-                                (d.id, d.title, d.text))
-                n += 1
-        self.db.commit()
+        with self.lock:
+            for d in docs:
+                cur = self.db.execute("INSERT OR IGNORE INTO docs VALUES (?,?,?,?,?,?,?,?)",
+                                      (d.id, d.kind, d.ref, d.url, d.title, d.author, d.date, d.text))
+                if cur.rowcount:
+                    self.db.execute("INSERT INTO docs_fts(id,title,text) VALUES (?,?,?)",
+                                    (d.id, d.title, d.text))
+                    n += 1
+            self.db.commit()
         return n
 
     def set_meta(self, k: str, v) -> None:
-        self.db.execute("INSERT OR REPLACE INTO meta VALUES (?,?)", (k, json.dumps(v)))
-        self.db.commit()
+        with self.lock:
+            self.db.execute("INSERT OR REPLACE INTO meta VALUES (?,?)", (k, json.dumps(v)))
+            self.db.commit()
 
     def get_meta(self, k: str, default=None):
-        row = self.db.execute("SELECT v FROM meta WHERE k=?", (k,)).fetchone()
+        with self.lock:
+            row = self.db.execute("SELECT v FROM meta WHERE k=?", (k,)).fetchone()
         return json.loads(row[0]) if row else default
 
     def missing_vectors(self, model: str) -> list[Doc]:
-        rows = self.db.execute(
-            "SELECT d.* FROM docs d LEFT JOIN vectors v ON v.id=d.id AND v.model=? WHERE v.id IS NULL",
-            (model,)).fetchall()
+        with self.lock:
+            rows = self.db.execute(
+                "SELECT d.* FROM docs d LEFT JOIN vectors v ON v.id=d.id AND v.model=? WHERE v.id IS NULL",
+                (model,)).fetchall()
         return [Doc(*r) for r in rows]
 
     def put_vectors(self, model: str, items: list[tuple[str, list[float]]]) -> None:
-        for i, vec in items:
-            a = np.asarray(vec, dtype=np.float32)
-            self.db.execute("INSERT OR REPLACE INTO vectors VALUES (?,?,?,?)",
-                            (i, model, a.size, a.tobytes()))
-        self.db.commit()
+        with self.lock:
+            for i, vec in items:
+                a = np.asarray(vec, dtype=np.float32)
+                self.db.execute("INSERT OR REPLACE INTO vectors VALUES (?,?,?,?)",
+                                (i, model, a.size, a.tobytes()))
+            self.db.commit()
 
     # -- reading ---------------------------------------------------------
     def get(self, doc_id: str) -> Doc | None:
-        r = self.db.execute("SELECT * FROM docs WHERE id=?", (doc_id,)).fetchone()
+        with self.lock:
+            r = self.db.execute("SELECT * FROM docs WHERE id=?", (doc_id,)).fetchone()
         return Doc(*r) if r else None
 
     def by_ref(self, ref: str) -> list[Doc]:
-        return [Doc(*r) for r in self.db.execute("SELECT * FROM docs WHERE ref=?", (ref,))]
+        with self.lock:
+            rows = self.db.execute("SELECT * FROM docs WHERE ref=?", (ref,)).fetchall()
+        return [Doc(*r) for r in rows]
 
     def count(self) -> dict[str, int]:
-        return dict(self.db.execute("SELECT kind, COUNT(*) FROM docs GROUP BY kind").fetchall())
+        with self.lock:
+            return dict(self.db.execute("SELECT kind, COUNT(*) FROM docs GROUP BY kind").fetchall())
 
     def keyword(self, query: str, k: int = 30) -> list[tuple[str, float]]:
         terms = [t for t in "".join(c if c.isalnum() or c in "_." else " " for c in query).split()
@@ -91,13 +111,15 @@ class Memory:
         if not terms:
             return []
         q = " OR ".join('"' + t.replace('"', "") + '"' for t in terms)
-        rows = self.db.execute(
-            "SELECT id, bm25(docs_fts, 2.0, 1.0) FROM docs_fts WHERE docs_fts MATCH ? "
-            "ORDER BY bm25(docs_fts, 2.0, 1.0) LIMIT ?", (q, k)).fetchall()
+        with self.lock:
+            rows = self.db.execute(
+                "SELECT id, bm25(docs_fts, 2.0, 1.0) FROM docs_fts WHERE docs_fts MATCH ? "
+                "ORDER BY bm25(docs_fts, 2.0, 1.0) LIMIT ?", (q, k)).fetchall()
         return [(i, -s) for i, s in rows]
 
     def vectors(self, model: str) -> tuple[list[str], np.ndarray]:
-        rows = self.db.execute("SELECT id, v FROM vectors WHERE model=?", (model,)).fetchall()
+        with self.lock:
+            rows = self.db.execute("SELECT id, v FROM vectors WHERE model=?", (model,)).fetchall()
         if not rows:
             return [], np.zeros((0, 0), dtype=np.float32)
         ids = [r[0] for r in rows]
