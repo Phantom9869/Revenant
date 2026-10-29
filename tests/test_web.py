@@ -147,3 +147,13 @@ def test_unknown_patient_is_404(live):
     with pytest.raises(urllib.error.HTTPError) as err:
         urllib.request.urlopen(live + "/p/../../etc/passwd", timeout=10)
     assert err.value.code == 404
+
+
+def test_pages_have_landmarks_labels_and_current_tab():
+    from revenant.config import Patient
+    html = app.page("x", app.ask_body(Patient("psf/requests-html")), "psf/requests-html", "ask").decode()
+    assert "<main>" in html and "</main>" in html
+    assert re.search(r"<a href='/p/psf/requests-html/ask' class=on aria-current=page>", html)
+    assert html.count("aria-current") == 1
+    field = re.search(r"<input name=q[^>]*>", html).group(0)
+    assert "aria-label=" in field and "required" in field

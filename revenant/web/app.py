@@ -243,12 +243,13 @@ def page(title: str, body: str, slug: str | None = None, tab: str = "") -> bytes
     nav = ""
     if slug:
         links = [("", "Overview"), ("certificate", "Certificate"), ("resurrection", "Resurrection"), ("ask", "Ask the ghost")]
-        nav = "<nav class=tabs>" + "".join(
-            f"<a href='/p/{e(slug)}{'/' + k if k else ''}' class='{'on' if k == tab else ''}'>{v}</a>" for k, v in links) + "</nav>"
+        nav = "<nav class=tabs aria-label='Patient'>" + "".join(
+            f"<a href='/p/{e(slug)}{'/' + k if k else ''}'" + (" class=on aria-current=page" if k == tab else "") + f">{v}</a>"
+            for k, v in links) + "</nav>"
     return (f"<!doctype html><html lang=en><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
             f"<meta name=color-scheme content='dark light'><title>{e(title)}</title><script>{THEME_HEAD}</script>"
             f"<style>{CSS}</style><body><div class=wrap>"
-            f"<header class=top><a class=mark href='/'>Revenant</a><div class=right>{nav}{TOGGLE}</div></header>{body}"
+            f"<header class=top><a class=mark href='/'>Revenant</a><div class=right>{nav}{TOGGLE}</div></header><main>{body}</main>"
             f"<footer>Revenant reads a project's own history, runs its own tests in a network-less sandbox, and keeps only "
             f"changes that make them pass. The ghost speaks only from cited records.</footer></div><script>{JS}</script></body></html>").encode()
 
@@ -325,7 +326,7 @@ def overview_body(p: Patient) -> str:
             f"<a class=card href='/p/{e(p.slug)}/resurrection'><p class=k>Resurrection</p>{_arrow(f)}"
             f"<p class='small dim'>{len(kept)} change(s) kept" + (f" · green on Python {e(', '.join(green))}" if green else "") + "</p></a>"
             "</div>"
-            f"<h2>Ask the ghost</h2><form class=ask method=get action='/p/{e(p.slug)}/ask'><input name=q placeholder='Ask about its past…' autocomplete=off>"
+            f"<h2>Ask the ghost</h2><form class=ask method=get action='/p/{e(p.slug)}/ask'><input name=q aria-label='Your question' maxlength=500 required placeholder='Ask about its past…' autocomplete=off>"
             f"<button>Ask</button></form><div class=examples>{ex}</div>")
 
 
@@ -420,9 +421,9 @@ def ask_body(p: Patient, q: str = "", answer: str = "") -> str:
     return (f"<p class=eyebrow>The ghost of {e(p.slug.split('/')[1])}</p><h1>Ask about its past</h1>"
             "<p class=lede>It answers only from its own commits, issues, reviews and docs. Every sentence must cite a record "
             "it was shown, and each citation is checked against that record's text. When the records are silent, so is the ghost.</p>"
-            f"<form class=ask method=post action='/p/{e(p.slug)}/ask'><input name=q value='{e(q)}' placeholder='Ask about its past…' autocomplete=off>"
+            f"<form class=ask method=post action='/p/{e(p.slug)}/ask'><input name=q aria-label='Your question' maxlength=500 required value='{e(q)}' placeholder='Ask about its past…' autocomplete=off>"
             f"<button>Ask</button></form><div class=examples>{ex}</div>"
-            "<p class=spirit>The ghost is going through its records…</p>" + answer)
+            "<p class=spirit role=status>The ghost is going through its records…</p>" + answer)
 
 
 class Handler(BaseHTTPRequestHandler):
