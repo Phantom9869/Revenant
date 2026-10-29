@@ -62,3 +62,25 @@ def test_relax_trailing_newline(tmp_path):
     (tmp_path / "a.py").write_text("last line")
     e = relax_trailing_newline(tmp_path, Edit("a.py", "last line\n", "new line\n"))
     assert e.search == "last line" and e.replace == "new line"
+
+
+def test_fix_touching_outside_the_tree_leaves_outside_files_alone(tmp_path):
+    tree = tmp_path / "t"
+    tree.mkdir()
+    (tree / "a.py").write_text("a\n")
+    outside = tmp_path / "secret.txt"
+    outside.write_text("keep\n")
+    outside.chmod(0o400)   # rewriting it, even with the same text, would fail
+    fix = Fix("f", "f", [Edit("a.py", "a\n", "A\n"), Edit("../secret.txt", "keep\n", "gone\n")], "why")
+    try:
+        with pytest.raises(EditError, match="outside"):
+            apply_fix(tree, fix)
+    finally:
+        outside.chmod(0o600)
+    assert (tree / "a.py").read_text() == "a\n" and outside.read_text() == "keep\n"
+
+
+def test_relax_trailing_newline_ignores_paths_outside_the_tree(tmp_path):
+    (tmp_path / "t").mkdir()
+    e = Edit("../x.py", "y\n", "z\n")
+    assert relax_trailing_newline(tmp_path / "t", e) is e

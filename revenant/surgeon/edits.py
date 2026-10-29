@@ -31,12 +31,18 @@ class Fix:
     deps: list[str] = field(default_factory=list)   # extra test-only deps
 
 
+def _inside(root: Path, rel: str) -> Path:
+    """The resolved path of `rel` under `root`; EditError if it points outside the tree."""
+    root = Path(root).resolve()
+    path = (root / rel).resolve()
+    if root not in path.parents:
+        raise EditError(f"refusing to edit outside the tree: {rel}")
+    return path
+
+
 def apply_edit(root: Path, e: Edit) -> str:
     """Apply one edit in place and return a unified diff. Raises EditError on mismatch."""
-    root = Path(root).resolve()
-    path = (root / e.path).resolve()
-    if root not in path.parents:
-        raise EditError(f"refusing to edit outside the tree: {e.path}")
+    path = _inside(root, e.path)
     if e.search == "":
         if path.exists():
             raise EditError(f"{e.path} already exists")
@@ -57,12 +63,11 @@ def apply_edit(root: Path, e: Edit) -> str:
 
 def apply_fix(root: Path, fix: Fix) -> str:
     """All-or-nothing: if any edit fails, files touched so far are restored."""
-    root = Path(root)
     backups: dict[Path, str | None] = {}
     diffs = []
     try:
         for e in fix.edits:
-            p = root / e.path
+            p = _inside(root, e.path)   # check before backing up, so nothing outside is read or rewritten
             if p not in backups:
                 backups[p] = p.read_text() if p.exists() else None
             diffs.append(apply_edit(root, e))
@@ -103,8 +108,11 @@ def parse_blocks(text: str) -> list[Edit]:
 
 def relax_trailing_newline(root: Path, e: Edit) -> Edit:
     """Models often drop the final newline of a block; match without it if that's unique."""
-    p = Path(root) / e.path
-    if p.exists():
+    try:
+        p = _inside(root, e.path)
+    except EditError:
+        return e   # apply_edit refuses it with the proper message
+    if p.is_file():
         text = p.read_text()
         if text.count(e.search) == 0 and e.search.endswith("\n") and text.count(e.search[:-1]) == 1:
             return Edit(e.path, e.search[:-1], e.replace[:-1] if e.replace.endswith("\n") else e.replace)

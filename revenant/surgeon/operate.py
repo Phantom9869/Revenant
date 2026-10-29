@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 from ..diagnose import Outcome, locate
-from .edits import Edit, EditError, Fix, parse_blocks, relax_trailing_newline
+from .edits import EditError, Fix, parse_blocks, relax_trailing_newline
 
 SYSTEM = """You are a careful maintainer reviving an old Python project so its existing test suite passes on a modern Python and modern dependencies.
 Make the smallest correct change. Prefer fixing the library over weakening tests. Never delete or skip tests, never change expected values unless the evidence proves the expectation is wrong.
@@ -78,11 +78,12 @@ def propose(model, root: Path, failure: Outcome, feedback: str = "") -> tuple[Fi
     system = SYSTEM.format(path=sorted(shown)[0] if shown else "module.py", files=", ".join(sorted(shown)) or "none")
     res = model.chat([{"role": "system", "content": system}, {"role": "user", "content": prompt}],
                      temperature=0.1)
-    edits = [relax_trailing_newline(root, e) for e in parse_blocks(res.text)]
-    good = []
-    for e in edits:
+    edits = parse_blocks(res.text)
+    for e in edits:   # check before touching the file system at all
         if e.path not in shown:
             raise EditError(f"model tried to edit a file it was not shown: {e.path}")
+    good = []
+    for e in (relax_trailing_newline(root, e) for e in edits):
         n = (Path(root) / e.path).read_text().count(e.search)
         if n != 1:
             raise EditError(f"SEARCH block for {e.path} matched {n} times, need exactly 1")
