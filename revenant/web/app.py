@@ -493,11 +493,11 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(400, b"empty question", "text/plain")
         from ..cli import build_ghost
         from ..integrations import tracing
-        ghost = self.ghosts.get(p.slug) or self.ghosts.setdefault(p.slug, build_ghost(p))
         with tracing.transaction("POST /p/<slug>/ask", op="http.server"):
             try:
+                ghost = self.ghosts.get(p.slug) or self.ghosts.setdefault(p.slug, build_ghost(p))
                 ans = ghost.ask(q)
-            except Exception as ex:  # model server down, out of credit, ...
+            except Exception as ex:  # model server down, out of credit, no API key, ...
                 msg = f"The séance was interrupted: {type(ex).__name__}: {str(ex)[:300]}"
                 if wants_json:
                     return self._send(502, json.dumps({"error": msg}).encode(), "application/json")

@@ -11,8 +11,16 @@ from . import __version__, config
 from .config import Patient, parse_slug
 
 
-def _patient(args) -> Patient:
-    return Patient(parse_slug(args.repo)).ensure()
+def _slug(repo: str) -> str:
+    try:
+        return parse_slug(repo)
+    except ValueError as e:
+        raise SystemExit(f"revenant: {e} (expected owner/name or a github.com URL)") from None
+
+
+def _patient(args, create: bool = True) -> Patient:
+    p = Patient(_slug(args.repo))
+    return p.ensure() if create else p
 
 
 def cmd_summon(args):
@@ -70,10 +78,13 @@ def build_ghost(p: Patient, model_spec: str | None = None, verify: bool = True):
 
 
 def cmd_ask(args):
-    p = _patient(args)
+    p = _patient(args, create=False)
     if not p.db.exists():
         sys.exit(f"No memory for {p.slug}. Run: revenant summon {p.slug}")
-    ghost = build_ghost(p, args.model, verify=not args.no_verify)
+    try:
+        ghost = build_ghost(p, args.model, verify=not args.no_verify)
+    except RuntimeError as e:   # e.g. BACKBOARD_API_KEY is not set
+        sys.exit(f"revenant: {e}")
     ans = ghost.ask(args.question)
     if args.json:
         print(json.dumps({"question": ans.question, "answer": ans.text, "refused": ans.refused,
@@ -132,11 +143,14 @@ def cmd_resurrect(args):
     if args.surgeon == "none":
         surgeon = None
     elif args.surgeon.startswith("backboard:"):
-        surgeon = get_chat_model(args.surgeon)
+        try:
+            surgeon = get_chat_model(args.surgeon)
+        except RuntimeError as e:   # BACKBOARD_API_KEY is not set
+            sys.exit(f"revenant: {e}")
     else:
         surgeon = OllamaClient(args.surgeon, temperature=0.1)
     if surgeon is not None and not surgeon.available():
-        print(f"  surgeon model {args.surgeon} not available in Ollama; continuing with the grimoire only")
+        print(f"  surgeon model {args.surgeon} not available (is it pulled in Ollama?); continuing with the grimoire only")
         surgeon = None
     meter = Metered(surgeon) if surgeon is not None else None
     surgeon = meter
@@ -176,7 +190,7 @@ def cmd_export(args):
     import shutil
     import sqlite3
     from pathlib import Path
-    p = Patient(parse_slug(args.repo))
+    p = _patient(args, create=False)
     if not p.db.exists():
         sys.exit(f"No memory for {p.slug}. Run: revenant summon {p.slug}")
     dest = Path(args.to).resolve() / p.root.name
