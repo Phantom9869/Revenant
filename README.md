@@ -385,6 +385,7 @@ revenant/
   integrations/       Sentry tracing, Wayback + Browserbase
   web/app.py          stdlib web UI and JSON API
 tests/                unit tests (offline; models and web services stubbed)
+.github/workflows/    CI: ruff (pyflakes) and pytest on Python 3.11–3.13
 demo/                 real outputs from the runs described above
 docs/                 screenshots (headless Chromium)
 scripts/              screenshots.py, check_theme.mjs

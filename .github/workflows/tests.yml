@@ -1,0 +1,27 @@
+# Revenant's own unit tests (not the patient's: those run in the bwrap sandbox locally).
+# Everything here is offline: models, GitHub, Backboard, Browserbase and Sentry are stubbed.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install '.[test]' ruff
+      - run: ruff check --select F,E9 .
+      - run: pytest -q

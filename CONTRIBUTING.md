@@ -13,7 +13,9 @@ pytest -q
 
 The unit tests need only Python ≥ 3.11 and `git`. They stub every model and web service, so
 they run offline and need no API keys. The sandbox test is skipped when `bwrap` isn't usable,
-and the Sentry test when `sentry-sdk` isn't installed.
+and the Sentry test when `sentry-sdk` isn't installed. CI
+([`.github/workflows/tests.yml`](.github/workflows/tests.yml)) runs the same suite on
+Python 3.11–3.13, plus `ruff check --select F,E9 .`.
 
 Running Revenant on a real patient needs more (Ollama, `uv`, `bwrap`); see
 [Install](README.md#install).
