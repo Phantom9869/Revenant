@@ -1,7 +1,5 @@
 import json
 
-import numpy as np
-
 from revenant.memory import ingest
 from revenant.memory.retrieve import Retriever, rrf
 from revenant.memory.store import Doc, Memory

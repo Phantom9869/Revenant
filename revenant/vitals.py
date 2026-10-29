@@ -7,7 +7,7 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 UA = {"User-Agent": "Revenant/0.1 (+https://github.com/Phantom9869/Revenant)"}
