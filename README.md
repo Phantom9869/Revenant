@@ -339,7 +339,7 @@ revenant ask  [cli]  5.47s
 - Sentry: real traces sent from `ask`, `autopsy` and `resurrect`; the span tree captured locally; span structure covered by an offline test
 - web UI against real data, and the Render configuration run locally (bundle, keyword retrieval, ghost on Backboard, `$PORT`)
 - the live Render deployment from `render.yaml`: `/healthz`, `/`, `/p/psf/requests-html`, `/certificate` and `/resurrection` return 200, and a live `POST /p/psf/requests-html/ask` answered the lxml question with per-sentence citation verdicts (the checker flagged one sentence as unsupported)
-- 107 unit tests (`pytest`, offline, no keys needed). The run saved in
+- 109 unit tests (`pytest`, offline, no keys needed). The run saved in
   [`demo/12_revenant_tests.txt`](demo/12_revenant_tests.txt) is from the submitted version, which had 88
 
 **Implemented but untested:**
