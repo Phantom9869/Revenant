@@ -195,7 +195,7 @@ def apply_support(text: str, claims: list[Claim], normalise) -> tuple[str, list[
     removed, withheld = [], []
     out = []
     sentences = split_sentences(text)
-    for sent, c in zip(sentences, claims):
+    for sent, c in zip(sentences, claims, strict=True):   # check_support made one claim per sentence
         if c.verdict == "uncited":
             out.append(sent)
             continue

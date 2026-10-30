@@ -69,7 +69,7 @@ class GitHubClient:
                 hdrs = resp.headers
         except urllib.error.HTTPError as e:
             if e.code in (403, 429) and e.headers.get("X-RateLimit-Remaining") == "0":
-                raise RateLimited(int(e.headers.get("X-RateLimit-Reset", time.time() + 3600)))
+                raise RateLimited(int(e.headers.get("X-RateLimit-Reset", time.time() + 3600))) from e
             raise
         self.requests_made += 1
         rem = hdrs.get("X-RateLimit-Remaining")

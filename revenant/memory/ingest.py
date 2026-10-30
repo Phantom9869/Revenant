@@ -138,7 +138,7 @@ def build(patient, embedder=None, batch: int = 32, log=print) -> dict:
         for i in range(0, len(todo), batch):
             part = todo[i:i + batch]
             mem.put_vectors(embedder.name, list(zip([d.id for d in part],
-                                                    embedder.embed_docs([(d.title, d.text) for d in part]))))
+                                                    embedder.embed_docs([(d.title, d.text) for d in part]), strict=True)))
             if i and i % (batch * 20) == 0:
                 log(f"  embedded {i}/{len(todo)}")
         out["embedded"], out["embed_seconds"] = len(todo), round(time.time() - t, 1)

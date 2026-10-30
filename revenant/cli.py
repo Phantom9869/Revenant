@@ -45,7 +45,7 @@ def cmd_summon(args):
             try:
                 snap = wayback.closest(args.archive, args.archive_at)
             except OSError as e:
-                raise SystemExit(f"  Wayback lookup failed ({e}); pass a full web.archive.org/web/<timestamp>/<url> instead")
+                raise SystemExit(f"  Wayback lookup failed ({e}); pass a full web.archive.org/web/<timestamp>/<url> instead") from e
         if snap:
             fetcher = wayback.default_fetcher(p.cache / "archive")
             from .integrations import tracing
@@ -56,7 +56,7 @@ def cmd_summon(args):
             m = Memory(p.db)
             m.add(docs)
             if emb:
-                m.put_vectors(emb.name, list(zip([d.id for d in docs], emb.embed_docs([(d.title, d.text) for d in docs]))))
+                m.put_vectors(emb.name, list(zip([d.id for d in docs], emb.embed_docs([(d.title, d.text) for d in docs]), strict=True)))
             src = "disk cache" if fetcher.hits else fetcher.name
             print(f"  archived {args.archive} as of {snap.date} via {src}: {len(docs)} chunks, cited as [{docs[0].ref if docs else '-'}]")
         else:
