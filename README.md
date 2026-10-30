@@ -220,6 +220,18 @@ revenant summon psf/requests-html
 
 Revenant's own tests run offline with `pytest -q` (see [`CONTRIBUTING.md`](CONTRIBUTING.md)).
 
+**Look around without any models.** The exported requests-html patient is committed, so a fresh
+clone can serve the web UI straight away (only `pip install -e .` needed, no Ollama, `uv` or `bwrap`):
+
+```
+REVENANT_HOME=deploy/bundle REVENANT_EMBED_MODEL=none revenant serve
+```
+
+Every page works at <http://127.0.0.1:8000>. Asking the ghost needs a model: Ollama with
+`gemma4:e4b` running locally, or `REVENANT_GHOST_MODEL=backboard:<provider>/<model>` plus
+`BACKBOARD_API_KEY` (the Render configuration). Without one, a question gets
+"The séance was interrupted" (a 502).
+
 Data goes to `$REVENANT_HOME` (default `./.revenant`). Commits in the revived fork use
 `REVENANT_GIT_NAME` / `REVENANT_GIT_EMAIL` when set.
 
@@ -327,7 +339,7 @@ revenant ask  [cli]  5.47s
 - Sentry: real traces sent from `ask`, `autopsy` and `resurrect`; the span tree captured locally; span structure covered by an offline test
 - web UI against real data, and the Render configuration run locally (bundle, keyword retrieval, ghost on Backboard, `$PORT`)
 - the live Render deployment from `render.yaml`: `/healthz`, `/`, `/p/psf/requests-html`, `/certificate` and `/resurrection` return 200, and a live `POST /p/psf/requests-html/ask` answered the lxml question with per-sentence citation verdicts (the checker flagged one sentence as unsupported)
-- 103 unit tests (`pytest`, offline, no keys needed). The run saved in
+- 107 unit tests (`pytest`, offline, no keys needed). The run saved in
   [`demo/12_revenant_tests.txt`](demo/12_revenant_tests.txt) is from the submitted version, which had 88
 
 **Implemented but untested:**
