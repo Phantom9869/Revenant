@@ -6,6 +6,7 @@ import html
 import json
 import os
 import re
+import threading
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -427,7 +428,8 @@ def ask_body(p: Patient, q: str = "", answer: str = "") -> str:
 
 
 class Handler(BaseHTTPRequestHandler):
-    ghosts: dict = {}
+    ghosts: dict = {}                    # one ghost per patient slug, shared by every request thread
+    ghost_lock = threading.Lock()        # so concurrent first questions build the ghost only once
 
     def _send(self, code: int, body: bytes, ctype: str = "text/html; charset=utf-8"):
         self.send_response(code)
@@ -440,6 +442,16 @@ class Handler(BaseHTTPRequestHandler):
 
     def _patient(self, slug: str) -> Patient | None:
         return next((p for p in patients() if p.slug == slug), None)
+
+    def _ghost(self, p: Patient):
+        ghost = self.ghosts.get(p.slug)
+        if ghost is None:
+            from ..cli import build_ghost
+            with self.ghost_lock:
+                ghost = self.ghosts.get(p.slug)
+                if ghost is None:
+                    ghost = self.ghosts[p.slug] = build_ghost(p)
+        return ghost
 
     def do_GET(self):
         u = urllib.parse.urlparse(self.path)
@@ -491,12 +503,10 @@ class Handler(BaseHTTPRequestHandler):
         q = q.strip()[:500]
         if not q:
             return self._send(400, b"empty question", "text/plain")
-        from ..cli import build_ghost
         from ..integrations import tracing
         with tracing.transaction("POST /p/<slug>/ask", op="http.server"):
             try:
-                ghost = self.ghosts.get(p.slug) or self.ghosts.setdefault(p.slug, build_ghost(p))
-                ans = ghost.ask(q)
+                ans = self._ghost(p).ask(q)
             except Exception as ex:  # model server down, out of credit, no API key, ...
                 msg = f"The séance was interrupted: {type(ex).__name__}: {str(ex)[:300]}"
                 if wants_json:

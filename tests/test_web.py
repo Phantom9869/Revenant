@@ -123,6 +123,36 @@ def test_ask_api_answers_json_and_sends_safe_headers(live):
     assert headers["X-Content-Type-Options"] == "nosniff"
 
 
+
+def test_concurrent_first_questions_build_the_ghost_once(live, monkeypatch):
+    import json
+    import time
+
+    from revenant import cli
+    ghost = app.Handler.ghosts["psf/requests-html"]
+    builds = []
+
+    def slow_build(p):
+        builds.append(p.slug)
+        time.sleep(0.3)   # wide window: without the lock every request would build its own
+        return ghost
+
+    monkeypatch.setattr(app.Handler, "ghosts", {})
+    monkeypatch.setattr(cli, "build_ghost", slow_build)
+    results = []
+
+    def ask():
+        results.append(_post(live + "/p/psf/requests-html/ask", b'{"q": "lxml"}', "application/json"))
+
+    threads = [threading.Thread(target=ask) for _ in range(4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(15)
+    assert [r[0] for r in results] == [200] * 4
+    assert all(json.loads(r[1])["model"] == "stub" for r in results)
+    assert builds == ["psf/requests-html"]
+
 @pytest.mark.parametrize("body,ctype", [
     (b"\xff\xfe", "application/x-www-form-urlencoded"),   # not UTF-8
     (b"[1, 2]", "application/json"),                       # JSON, but not an object
