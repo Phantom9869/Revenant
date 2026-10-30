@@ -341,7 +341,7 @@ def overview_body(p: Patient) -> str:
             f"<a class=card href='/p/{e(p.slug)}/resurrection'><p class=k>Resurrection</p>{_arrow(f)}"
             f"<p class='small dim'>{len(kept)} change(s) kept" + (f" · green on Python {e(', '.join(green))}" if green else "") + "</p></a>"
             "</div>"
-            f"<h2>Ask the ghost</h2><form class=ask method=get action='/p/{e(p.slug)}/ask'><input name=q aria-label='Your question' maxlength=500 required placeholder='Ask about its past…' autocomplete=off>"
+            f"<h2>Ask the ghost</h2><form class=ask method=post action='/p/{e(p.slug)}/ask'><input name=q aria-label='Your question' maxlength=500 required placeholder='Ask about its past…' autocomplete=off>"
             f"<button>Ask</button></form><div class=examples>{ex}</div>")
 
 
@@ -525,7 +525,7 @@ class Handler(BaseHTTPRequestHandler):
                 msg = f"The séance was interrupted: {type(ex).__name__}: {str(ex)[:300]}"
                 if wants_json:
                     return self._send(502, json.dumps({"error": msg}).encode(), "application/json")
-                return self._send(502, page("Revenant", ask_body(p, q, f"<p class=dim>{e(msg)}</p>"), p.slug, "ask"))
+                return self._send(502, page("Revenant", ask_body(p, q, f"<p class=dim role=alert>{e(msg)}</p>"), p.slug, "ask"))
         if wants_json:
             return self._send(200, json.dumps({"answer": ans.text, "refused": ans.refused, "reason": ans.reason,
                                                "sources": ans.sources(), "unsupported": ans.unsupported,

@@ -196,3 +196,18 @@ def test_ask_form_fits_a_phone_and_recovers_from_the_back_button():
     assert "@media (max-width:640px)" in app.CSS
     # a page restored from the back/forward cache must not stay stuck on "listening"
     assert "pageshow" in app.JS and "b.disabled=false" in app.JS
+
+
+def test_overview_asks_in_one_step_and_failures_are_announced(live, monkeypatch):
+    from revenant.config import Patient
+    # the overview's box posts the question itself instead of only pre-filling the ask page
+    assert "<form class=ask method=post action='/p/psf/requests-html/ask'>" in app.overview_body(Patient("psf/requests-html"))
+
+    class Broken:
+        def ask(self, q):
+            raise ConnectionError("model server down")
+
+    monkeypatch.setattr(app.Handler, "ghosts", {"psf/requests-html": Broken()})
+    status, body, _ = _post(live + "/p/psf/requests-html/ask", b"q=hello", "application/x-www-form-urlencoded")
+    assert status == 502
+    assert b"role=alert>The s" in body and b"ConnectionError: model server down" in body
