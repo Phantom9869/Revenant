@@ -187,3 +187,12 @@ def test_pages_have_landmarks_labels_and_current_tab():
     assert html.count("aria-current") == 1
     field = re.search(r"<input name=q[^>]*>", html).group(0)
     assert "aria-label=" in field and "required" in field
+
+
+def test_ask_form_fits_a_phone_and_recovers_from_the_back_button():
+    # a flex input with no min-width can't shrink below its intrinsic size, which pushed the
+    # Ask button off a 375px screen
+    assert re.search(r"form\.ask input\{[^}]*min-width:0", app.CSS)
+    assert "@media (max-width:640px)" in app.CSS
+    # a page restored from the back/forward cache must not stay stuck on "listening"
+    assert "pageshow" in app.JS and "b.disabled=false" in app.JS

@@ -179,7 +179,7 @@ background:linear-gradient(180deg,var(--cert-a),var(--cert-b));box-shadow:inset 
 details summary{cursor:pointer;color:var(--dim);font-size:13px;margin-top:6px}
 pre.diff .add{color:var(--add)}pre.diff .del{color:var(--del)}pre.diff .hunk{color:var(--faint)}
 form.ask{display:flex;gap:10px;margin:18px 0 8px}
-form.ask input{flex:1;font:16px var(--sans);padding:13px 16px;border-radius:10px;border:1px solid var(--input-line);background:var(--input-bg);color:var(--ink);outline:none}
+form.ask input{flex:1;font:16px var(--sans);padding:13px 16px;border-radius:10px;border:1px solid var(--input-line);background:var(--input-bg);color:var(--ink);outline:none;min-width:0}
 form.ask input::placeholder{color:var(--faint)}
 form.ask input:focus{border-color:var(--focus)}
 form.ask button{font:600 14px var(--sans);letter-spacing:.04em;padding:0 20px;border-radius:10px;border:1px solid var(--btn-line);background:var(--btn-bg);color:var(--btn-ink);cursor:pointer}
@@ -195,6 +195,17 @@ form.ask button[disabled]{opacity:.5}
 .checks li.withheld{color:var(--dim)}.checks li.withheld q{text-decoration:line-through;text-decoration-color:var(--strike)}
 .spirit{display:none;color:var(--dim);font-style:italic;font-family:var(--serif)}
 footer{margin:70px 0 40px;color:var(--faint);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:640px){
+.wrap{padding:0 18px}
+header.top{flex-wrap:wrap;row-gap:12px}
+.right{display:contents}
+nav.tabs{order:3;flex-basis:100%;gap:6px 18px}
+h1{font-size:34px}
+.lede{font-size:19px}
+.eyebrow{margin-top:30px}
+.certificate{padding:24px 18px}
+.answer{font-size:19px;padding-left:16px}
+}
 """)
 
 # Runs in <head>, before any CSS paints, so the page never flashes the wrong theme:
@@ -214,6 +225,9 @@ TOGGLE = (f"<button class=theme type=button id=theme-toggle aria-label='Switch t
 JS = """document.querySelectorAll('form.ask').forEach(f=>f.addEventListener('submit',()=>{
 const b=f.querySelector('button');b.disabled=true;b.textContent='listening';
 const s=document.querySelector('.spirit');if(s)s.style.display='block';}));
+addEventListener('pageshow',ev=>{if(!ev.persisted)return;
+document.querySelectorAll('form.ask button').forEach(b=>{b.disabled=false;b.textContent='Ask';});
+const s=document.querySelector('.spirit');if(s)s.style.display='none';});
 (function(){const r=document.documentElement,b=document.getElementById('theme-toggle');if(!b)return;
 const label=()=>{const l='Switch to '+(r.getAttribute('data-theme')==='light'?'dark':'light')+' theme';b.setAttribute('aria-label',l);b.title=l;};
 const set=t=>{r.setAttribute('data-theme',t);label();};
