@@ -84,3 +84,12 @@ def test_relax_trailing_newline_ignores_paths_outside_the_tree(tmp_path):
     (tmp_path / "t").mkdir()
     e = Edit("../x.py", "y\n", "z\n")
     assert relax_trailing_newline(tmp_path / "t", e) is e
+
+
+def test_failed_fix_removes_the_directories_it_created(tmp_path):
+    (tmp_path / "a.py").write_text("x = 1\n")
+    fix = Fix("f", "t", [Edit("pkg/sub/new.py", "", "y = 2\n"), Edit("a.py", "nope", "z")], "why")
+    with pytest.raises(EditError):
+        apply_fix(tmp_path, fix)
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["a.py"]
+    assert (tmp_path / "a.py").read_text() == "x = 1\n"

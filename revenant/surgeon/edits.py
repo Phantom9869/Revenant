@@ -62,14 +62,20 @@ def apply_edit(root: Path, e: Edit) -> str:
 
 
 def apply_fix(root: Path, fix: Fix) -> str:
-    """All-or-nothing: if any edit fails, files touched so far are restored."""
+    """All-or-nothing: if any edit fails, files touched so far are restored, and files and
+    directories it created are removed."""
     backups: dict[Path, str | None] = {}
+    new_dirs: list[Path] = []
     diffs = []
     try:
         for e in fix.edits:
             p = _inside(root, e.path)   # check before backing up, so nothing outside is read or rewritten
             if p not in backups:
                 backups[p] = p.read_text() if p.exists() else None
+                d = p.parent
+                while not d.exists():   # apply_edit may create these for a new file
+                    new_dirs.append(d)
+                    d = d.parent
             diffs.append(apply_edit(root, e))
     except EditError:
         for p, text in backups.items():
@@ -77,6 +83,11 @@ def apply_fix(root: Path, fix: Fix) -> str:
                 p.unlink(missing_ok=True)
             else:
                 p.write_text(text)
+        for d in sorted(new_dirs, key=lambda d: len(d.parts), reverse=True):
+            try:
+                d.rmdir()
+            except OSError:   # never created, or something else is in it now
+                pass
         raise
     return "".join(diffs)
 
