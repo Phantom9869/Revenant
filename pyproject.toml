@@ -10,7 +10,26 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [{ name = "Phantom9869" }]
+keywords = ["open-source", "abandoned", "maintenance", "rag", "llm", "ollama", "gemma"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+]
 dependencies = ["numpy>=1.26"]
+
+[project.urls]
+Homepage = "https://github.com/Phantom9869/Revenant"
+Demo = "https://revenant-zaq3.onrender.com"
+Issues = "https://github.com/Phantom9869/Revenant/issues"
+"Write-up" = "https://dev.to/bladeharper_ec7070d6e28be/revenant-i-held-a-seance-for-a-dead-python-library-and-it-came-back-passing-its-tests-43md"
 
 [project.optional-dependencies]
 sentry = ["sentry-sdk>=2.0"]
