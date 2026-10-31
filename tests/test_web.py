@@ -123,6 +123,20 @@ def test_ask_api_answers_json_and_sends_safe_headers(live):
     assert headers["X-Content-Type-Options"] == "nosniff"
 
 
+def test_head_matches_get_without_a_body(live):
+    for path, code in (("/healthz", 200), ("/p/psf/requests-html", 200), ("/nope", 404)):
+        req = urllib.request.Request(live + path, method="HEAD")
+        try:
+            with urllib.request.urlopen(req, timeout=10) as r:
+                status, body, headers = r.status, r.read(), r.headers
+        except urllib.error.HTTPError as err:
+            status, body, headers = err.code, err.read(), err.headers
+        get_len = len(urllib.request.urlopen(live + path, timeout=10).read()) if code == 200 else None
+        assert status == code and body == b"", path
+        assert headers["X-Content-Type-Options"] == "nosniff"
+        if get_len is not None:
+            assert int(headers["Content-Length"]) == get_len, path
+
 
 def test_concurrent_first_questions_build_the_ghost_once(live, monkeypatch):
     import json
@@ -152,6 +166,7 @@ def test_concurrent_first_questions_build_the_ghost_once(live, monkeypatch):
     assert [r[0] for r in results] == [200] * 4
     assert all(json.loads(r[1])["model"] == "stub" for r in results)
     assert builds == ["psf/requests-html"]
+
 
 @pytest.mark.parametrize("body,ctype", [
     (b"\xff\xfe", "application/x-www-form-urlencoded"),   # not UTF-8

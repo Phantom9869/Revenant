@@ -452,7 +452,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
         self.end_headers()
-        self.wfile.write(body)
+        if self.command != "HEAD":
+            self.wfile.write(body)
 
     def _patient(self, slug: str) -> Patient | None:
         return next((p for p in patients() if p.slug == slug), None)
@@ -489,6 +490,10 @@ class Handler(BaseHTTPRequestHandler):
                 body = overview_body(p)
             return self._send(200, page(f"{p.slug} · Revenant", body, p.slug, which))
         self._send(404, page("Revenant", "<h1>Nothing haunts this address.</h1>"))
+
+    def do_HEAD(self):
+        """Same status and headers as GET, no body: for `curl -I`, link checkers and uptime monitors."""
+        self.do_GET()
 
     def do_POST(self):
         m = re.fullmatch(r"/p/([^/]+/[^/]+)/ask", urllib.parse.urlparse(self.path).path)
