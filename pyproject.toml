@@ -27,6 +27,7 @@ dependencies = ["numpy>=1.26"]
 
 [project.urls]
 Homepage = "https://github.com/Phantom9869/Revenant"
+Website = "https://phantom9869.github.io/Revenant/"
 Demo = "https://revenant-zaq3.onrender.com"
 Issues = "https://github.com/Phantom9869/Revenant/issues"
 "Write-up" = "https://dev.to/bladeharper_ec7070d6e28be/revenant-i-held-a-seance-for-a-dead-python-library-and-it-came-back-passing-its-tests-43md"

@@ -25,6 +25,8 @@ All numbers in this README come from runs saved under [`demo/`](demo/). The scre
 
 ![The Revenant web UI: the overview of psf/requests-html](docs/web-overview.png)
 
+**Website:** <https://phantom9869.github.io/Revenant/> (GitHub Pages, served from [`docs/`](docs/)).
+
 **Live demo:** <https://revenant-zaq3.onrender.com> (Render free tier: the first request after it
 has been idle can take about 30–60 s; see [Live on Render](#live-on-render-free-tier)).
 
@@ -399,7 +401,7 @@ revenant/
 tests/                unit tests (offline; models and web services stubbed)
 .github/workflows/    CI: ruff (pyflakes) and pytest on Python 3.11–3.13
 demo/                 real outputs from the runs described above
-docs/                 screenshots (headless Chromium)
+docs/                 screenshots (headless Chromium) and the GitHub Pages site (index.html)
 scripts/              screenshots.py, check_theme.mjs
 deploy/bundle/        exported patient data for the Render deploy
 render.yaml, DEPLOY.md  Render free-tier blueprint and notes

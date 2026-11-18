@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Revenant: a séance for abandoned open-source software</title>
+<meta name="description" content="Summon the ghost of an abandoned repository, find out what killed it, and bring it back one verified edit at a time.">
+<meta property="og:title" content="Revenant">
+<meta property="og:description" content="Summon the ghost of an abandoned repository, find out what killed it, and bring it back.">
+<meta property="og:image" content="https://phantom9869.github.io/Revenant/web-overview.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0c0e'/%3E%3Cpath d='M16 6c-4 0-7 3-7 7v11l3-2 2 2 2-2 2 2 2-2 3 2V13c0-4-3-7-7-7z' fill='%23c9a66b'/%3E%3C/svg%3E">
+<script>try{var t=localStorage.getItem("revenant-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<style>
+:root{--bg:#0b0c0e;--panel:#111317;--panel2:#15171c;--line:#24272d;--line2:#3a3730;--ink:#d9d4c7;--head:#ece6d6;--lede:#c9c3b4;--dim:#8f8b82;--candle:#c9a66b;--alive:#8db497;--dead:#c27f73;--glow:#1b1915;--glow0:rgba(11,12,14,0);--link:#4a4740;--code-bg:#181a1f;--pre-bg:#0e0f12;--btn-bg:#1b1812;--btn-line:#4a4130;--btn-ink:#e8d8b6;--shadow:rgba(0,0,0,.45);color-scheme:dark;
+--serif:"EB Garamond","Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;--sans:Inter,-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;--mono:"IBM Plex Mono","JetBrains Mono","SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono",monospace}
+:root[data-theme=light]{--bg:#f4efe4;--panel:#fbf8f1;--panel2:#fffdf8;--line:#ddd4c2;--line2:#c4b89f;--ink:#2b2722;--head:#1d1a16;--lede:#3f3a32;--dim:#5f584d;--candle:#835d1c;--alive:#2e6a43;--dead:#a13d2c;--glow:#fffaf0;--glow0:rgba(244,239,228,0);--link:#b9ad96;--code-bg:#efe8da;--pre-bg:#f8f4ec;--btn-bg:#efe3c8;--btn-line:#c6ab73;--btn-ink:#4a3711;--shadow:rgba(80,60,20,.14);color-scheme:light}
+@media (prefers-color-scheme:light){:root:not([data-theme]){--bg:#f4efe4;--panel:#fbf8f1;--panel2:#fffdf8;--line:#ddd4c2;--line2:#c4b89f;--ink:#2b2722;--head:#1d1a16;--lede:#3f3a32;--dim:#5f584d;--candle:#835d1c;--alive:#2e6a43;--dead:#a13d2c;--glow:#fffaf0;--glow0:rgba(244,239,228,0);--link:#b9ad96;--code-bg:#efe8da;--pre-bg:#f8f4ec;--btn-bg:#efe3c8;--btn-line:#c6ab73;--btn-ink:#4a3711;--shadow:rgba(80,60,20,.14);color-scheme:light}}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;color:var(--ink);font:16px/1.65 var(--sans);background:radial-gradient(1200px 560px at 50% -160px,var(--glow) 0%,var(--glow0) 70%),var(--bg)}
+a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--link);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--candle)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--candle);outline-offset:3px;border-radius:4px}
+.wrap{max-width:980px;margin:0 auto;padding:0 28px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px 0 10px}
+.mark{font:600 13px/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.right{display:flex;align-items:center;gap:24px}
+nav{display:flex;gap:22px;font-size:14px;flex-wrap:wrap}
+nav a{text-decoration:none;color:var(--dim);padding-bottom:4px;border-bottom:1px solid transparent}
+nav a:hover{color:var(--ink);border-bottom-color:var(--candle)}
+button.theme{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;flex:none;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--candle);cursor:pointer}
+button.theme:hover{border-color:var(--candle)}
+button.theme svg{width:16px;height:16px;display:block}
+button.theme .sun{display:none}
+:root[data-theme=light] button.theme .sun{display:block}:root[data-theme=light] button.theme .moon{display:none}
+@media (prefers-color-scheme:light){:root:not([data-theme]) button.theme .sun{display:block}:root:not([data-theme]) button.theme .moon{display:none}}
+@media (max-width:640px){nav a:not(:last-child){display:none}}
+h1,h2,h3{font-family:var(--serif);font-weight:400;color:var(--head);letter-spacing:.005em;margin:0}
+.hero{padding:70px 0 30px;text-align:center}
+.eyebrow{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--candle);margin:0 0 14px}
+h1{font-size:clamp(46px,9vw,84px);line-height:1.02;margin:0 0 .2em}
+.tag{font:italic clamp(20px,3.4vw,26px)/1.4 var(--serif);color:var(--lede);margin:0 auto 12px;max-width:640px}
+.sub{color:var(--dim);max-width:640px;margin:0 auto 30px}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:11px 20px;border-radius:8px;border:1px solid var(--btn-line);background:var(--btn-bg);color:var(--btn-ink);font-weight:600;font-size:14px;text-decoration:none}
+.btn:hover{border-color:var(--candle)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line2);font-weight:500}
+.shot{margin:46px auto 0;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 30px 70px -30px var(--shadow);background:var(--panel)}
+.shot img{display:block;width:100%;height:auto}
+section{padding:64px 0 0}
+h2{font-size:clamp(28px,4vw,36px);margin-bottom:10px}
+.lead{color:var(--lede);max-width:700px;font:20px/1.55 var(--serif);margin:0 0 28px}
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+@media (max-width:760px){.g3,.g2{grid-template-columns:1fr}.hero{padding-top:48px}}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+.card .n{font:12px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--candle);margin-bottom:10px}
+.card h3{font-size:23px;margin-bottom:8px}
+.card p{margin:0;color:var(--dim);font-size:15px}
+code,pre{font-family:var(--mono);font-size:13px}
+code{background:var(--code-bg);border:1px solid var(--line);border-radius:4px;padding:.05em .35em}
+pre{background:var(--pre-bg);border:1px solid var(--line);border-radius:10px;padding:16px 18px;overflow:auto;line-height:1.55;margin:0 0 14px}
+pre code{background:none;border:0;padding:0;font-size:inherit}
+.c{color:var(--dim)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:8px}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{border-top:1px solid var(--line2);padding-top:12px}
+.stat b{display:block;font:400 38px/1.1 var(--serif);color:var(--head)}
+.stat span{font-size:13px;color:var(--dim)}
+.shots{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media (max-width:760px){.shots{grid-template-columns:1fr}}
+figure{margin:0}
+figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+figure a{display:block}
+img.crop{aspect-ratio:16/10;object-fit:cover;object-position:top}
+figcaption{font-size:13px;color:var(--dim);margin-top:8px}
+.wide{grid-column:1/-1}
+ol.steps{margin:0;padding-left:1.2em;color:var(--lede)}
+ol.steps li{margin:0 0 .5em}
+footer{margin-top:84px;border-top:1px solid var(--line);padding:30px 0 56px;color:var(--dim);font-size:14px}
+footer .row{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <a class="mark" href="#top">Revenant</a>
+  <div class="right">
+    <nav aria-label="Sections">
+      <a href="#rites">What it does</a><a href="#proof">Results</a><a href="#install">Install</a><a href="#screens">Screenshots</a>
+      <a href="https://github.com/Phantom9869/Revenant">GitHub</a>
+    </nav>
+    <button class="theme" id="theme" type="button" aria-label="Switch between light and dark theme">
+      <svg class="moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+<div class="hero">
+  <p class="eyebrow">A séance for abandoned open-source software</p>
+  <h1>Revenant</h1>
+  <p class="tag">Every dead repository still has a voice. Revenant lets you talk to it, finds what killed it, and brings it back.</p>
+  <p class="sub">It reads a project's commits, issues, reviews and docs, answers questions with citations that are checked sentence by sentence, then repairs the code one small edit at a time, keeping an edit only if the project's own tests improve.</p>
+  <div class="cta">
+    <a class="btn" href="https://revenant-zaq3.onrender.com">Try the live demo</a>
+    <a class="btn ghost" href="#install">Install it</a>
+    <a class="btn ghost" href="https://github.com/Phantom9869/Revenant">View on GitHub</a>
+  </div>
+  <div class="shot"><img src="web-overview.png" width="1280" height="700" alt="The Revenant web UI showing the overview of psf/requests-html: death certificate, resurrection result and an ask box"></div>
+</div>
+
+<section id="rites">
+  <h2>The three rites</h2>
+  <p class="lead">Point Revenant at a repository on GitHub. It does three things, in order.</p>
+  <div class="grid g3">
+    <div class="card"><div class="n">I. Summon</div><h3>Build the ghost's memory</h3>
+      <p>Clones the repo, harvests issues, PRs, comments and reviews from the GitHub API (cached, resumable when rate-limited), and indexes everything in SQLite with full-text search and local embeddings. Dead docs sites can be raised from the Wayback Machine.</p></div>
+    <div class="card"><div class="n">II. Ask</div><h3>Talk to the ghost</h3>
+      <p>Hybrid retrieval, then an answer in first person from the project's own history. Every claim cites a record that was actually retrieved, and every cited sentence is checked against its sources. If nothing relevant exists, the ghost refuses instead of guessing.</p></div>
+    <div class="card"><div class="n">III. Resurrect</div><h3>Autopsy, then repair</h3>
+      <p>Runs the project's tests in a network-less sandbox, writes a death certificate with the causes, then applies one verified edit at a time. A fix is kept only if tests improve and no passing test regresses.</p></div>
+  </div>
+</section>
+
+<section id="proof">
+  <h2>It works on a real dead library</h2>
+  <p class="lead">The first patient is <a href="https://github.com/psf/requests-html">psf/requests-html</a>, last released in February 2019. On today's Python it does not even import.</p>
+  <div class="stats">
+    <div class="stat"><b>0 → 30</b><span>tests passing, before and after</span></div>
+    <div class="stat"><b>3.9–3.13</b><span>30 of 30 passing on every version</span></div>
+    <div class="stat"><b>2,810</b><span>documents in the ghost's memory</span></div>
+    <div class="stat"><b>0</b><span>passing tests broken: regressions are reverted</span></div>
+  </div>
+  <p class="lead" style="margin-top:26px;font-size:17px">Every number comes from a run saved in <a href="https://github.com/Phantom9869/Revenant/tree/main/demo"><code>demo/</code></a>. Revenant's own unit tests run offline on Python 3.11 to 3.13 in GitHub Actions.</p>
+</section>
+
+<section id="install">
+  <h2>Install and run</h2>
+  <p class="lead">Revenant is a Python package with no web framework: the UI uses the standard library only.</p>
+  <div class="grid g2">
+    <div>
+      <h3 style="font-size:23px;margin-bottom:10px">Look around, no models needed</h3>
+      <p style="color:var(--dim);margin-top:0">The exported requests-html patient is committed, so a fresh clone can serve the web UI straight away.</p>
+<pre><code>git clone https://github.com/Phantom9869/Revenant
+cd Revenant
+pip install -e .
+REVENANT_HOME=deploy/bundle \
+REVENANT_EMBED_MODEL=none \
+revenant serve
+<span class="c"># open http://127.0.0.1:8000</span></code></pre>
+      <p style="color:var(--dim);font-size:14px;margin:0">Browsing needs only Python 3.11 or newer and <code>git</code>. Asking the ghost needs a model (see the full setup).</p>
+    </div>
+    <div>
+      <h3 style="font-size:23px;margin-bottom:10px">Run it on a repository</h3>
+      <p style="color:var(--dim);margin-top:0">Needs Linux, <code>git</code>, <code>uv</code>, <code>bwrap</code> and <a href="https://ollama.com">Ollama</a>.</p>
+<pre><code>ollama pull gemma4:e4b
+ollama pull embeddinggemma
+ollama pull qwen2.5-coder:7b
+
+revenant summon psf/requests-html
+revenant ask psf/requests-html "Why does import fail?"
+revenant autopsy psf/requests-html
+revenant resurrect psf/requests-html</code></pre>
+      <p style="color:var(--dim);font-size:14px;margin:0">Set <code>GITHUB_TOKEN</code> to lift the API rate limit. Data goes to <code>$REVENANT_HOME</code> (default <code>./.revenant</code>).</p>
+    </div>
+  </div>
+  <p style="margin-top:18px"><a href="https://github.com/Phantom9869/Revenant#install">Full install notes</a> · <a href="https://github.com/Phantom9869/Revenant/blob/main/CONTRIBUTING.md">Contributing</a> · <a href="https://github.com/Phantom9869/Revenant/blob/main/DEPLOY.md">Deploying the web UI</a></p>
+</section>
+
+<section id="screens">
+  <h2>Screenshots</h2>
+  <p class="lead">Taken with headless Chromium from the running web UI and the real outputs of the runs above.</p>
+  <div class="shots">
+    <figure><a href="web-certificate.png"><img class="crop" loading="lazy" src="web-certificate.png" alt="The death certificate for psf/requests-html"></a><figcaption>The death certificate: causes of death, witnesses and vital signs.</figcaption></figure>
+    <figure><a href="web-resurrection.png"><img class="crop" loading="lazy" src="web-resurrection.png" alt="The resurrection timeline"></a><figcaption>The resurrection timeline: each operation, its verdict and test counts.</figcaption></figure>
+    <figure><a href="web-ask.png"><img class="crop" loading="lazy" src="web-ask.png" alt="An answer from the ghost with sources and per-sentence verdicts"></a><figcaption>An answer with its sources and a verdict for each sentence.</figcaption></figure>
+    <figure><a href="term-resurrect.png"><img class="crop" loading="lazy" src="term-resurrect.png" alt="Terminal output of revenant resurrect: edits kept or reverted, then the Python matrix"></a><figcaption>One resurrection in the terminal: a regressing edit is reverted, the rest are kept.</figcaption></figure>
+    <figure class="wide"><img loading="lazy" src="web-theme-compare.png" alt="The overview page in the dark and light themes, side by side"><figcaption>A dark séance room by default and a parchment light theme, both checked for WCAG AA contrast.</figcaption></figure>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="row">
+    <span>Revenant · MIT © 2026 Phantom9869 · Built with Grok Bot</span>
+    <span><a href="https://github.com/Phantom9869/Revenant">Source</a> · <a href="https://revenant-zaq3.onrender.com">Live demo</a> · <a href="https://dev.to/bladeharper_ec7070d6e28be/revenant-i-held-a-seance-for-a-dead-python-library-and-it-came-back-passing-its-tests-43md">Write-up</a></span>
+  </div>
+</footer>
+</div>
+<script>
+(function(){var b=document.getElementById("theme"),r=document.documentElement;
+b.addEventListener("click",function(){var cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");
+var next=cur==="light"?"dark":"light";r.setAttribute("data-theme",next);try{localStorage.setItem("revenant-theme",next)}catch(e){}})})();
+</script>
+</body>
+</html>
