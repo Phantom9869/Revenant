@@ -4,8 +4,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 import sys
 import time
+import urllib.error
 
 from . import __version__, config
 from .config import Patient, parse_slug
@@ -24,6 +26,18 @@ def _patient(args, create: bool = True) -> Patient:
 
 
 def cmd_summon(args):
+    try:
+        _summon(args)
+    except urllib.error.HTTPError as e:
+        hint = " (set GITHUB_TOKEN for a higher limit)" if e.code in (401, 403) else ""
+        sys.exit(f"revenant: GitHub answered HTTP {e.code} for {e.url}{hint}")
+    except urllib.error.URLError as e:
+        sys.exit(f"revenant: could not reach {e.reason!s}: check the network connection, or use --no-github")
+    except subprocess.CalledProcessError as e:
+        sys.exit(f"revenant: `git {e.cmd[3] if e.cmd[1:2] == ['-C'] else e.cmd[1]}` failed (exit {e.returncode}); does {args.repo} exist and is it public?")
+
+
+def _summon(args):
     from .harvest.github import GitHubClient, harvest
     from .harvest.gitlog import clone
     from .memory import ingest

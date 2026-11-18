@@ -22,3 +22,13 @@ def test_read_commits_and_pickaxe_on_a_real_repo(gitrepo):
     added_192 = pickaxe(gitrepo, "== 192", "t.py")
     assert [c.subject for c in added_192] == ["Fix tests"]
     assert [c.author for c in pickaxe(gitrepo, "== 191", "t.py")] == ["Kenneth", "Ordanis"]
+
+
+def test_clone_never_waits_for_a_password(monkeypatch, tmp_path):
+    import subprocess
+
+    from revenant.harvest import gitlog
+    seen = {}
+    monkeypatch.setattr(subprocess, "run", lambda cmd, **kw: seen.update(kw))
+    gitlog.clone("https://github.com/o/r", tmp_path / "clone")
+    assert seen["env"]["GIT_TERMINAL_PROMPT"] == "0" and seen["check"] is True

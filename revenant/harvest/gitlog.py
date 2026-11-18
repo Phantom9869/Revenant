@@ -1,6 +1,7 @@
 """Read a repository's own memory: its git history."""
 from __future__ import annotations
 
+import os
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -37,7 +38,8 @@ def clone(url: str, dest: Path) -> Path:
     if (dest / ".git").exists():
         return dest
     dest.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(["git", "clone", "--quiet", url, str(dest)], check=True)
+    env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}   # a missing or private repo must fail, not wait for a password
+    subprocess.run(["git", "clone", "--quiet", url, str(dest)], check=True, env=env)
     return dest
 
 
