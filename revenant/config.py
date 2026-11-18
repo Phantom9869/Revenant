@@ -22,14 +22,15 @@ _SLUG = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 
 
 def parse_slug(repo: str) -> str:
-    """Accept 'owner/name' or a github.com URL and return 'owner/name'."""
-    repo = repo.strip().rstrip("/")
+    """Accept 'owner/name' or a github.com URL (including deep links) and return 'owner/name'."""
+    repo = repo.strip()
+    m = re.search(r"github\.com[/:]([^/?#\s]+)/([^/?#\s]+)", repo)
+    if m:
+        repo = f"{m.group(1)}/{m.group(2)}"
+    repo = repo.rstrip("/")
     if repo.endswith(".git"):
         repo = repo[:-4]
-    m = re.search(r"github\.com[/:]([^/]+/[^/]+)$", repo)
-    if m:
-        repo = m.group(1)
-    if not _SLUG.match(repo):
+    if not _SLUG.match(repo) or repo.split("/")[1] in (".", ".."):
         raise ValueError(f"not a GitHub repo slug: {repo!r}")
     return repo
 
