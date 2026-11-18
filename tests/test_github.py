@@ -69,3 +69,16 @@ def test_rate_limit_raises_and_harvest_keeps_partial(tmp_path):
     assert json.loads((tmp_path / "raw" / "repo.json").read_text()) == {"full_name": slug}
     with pytest.raises(RateLimited):
         c.get("/anything-new")
+
+
+def test_corrupt_cache_page_is_fetched_again(tmp_path):
+    api = FakeAPI({f"{API}/items": ([1, 2], None)})
+    c = GitHubClient(tmp_path, token="", opener=api)
+    c.get("/items")
+    page = c._cache_path(f"{API}/items")
+    page.write_text('{"url": "x", "body": [1,')   # what an interrupted write leaves behind
+    c2 = GitHubClient(tmp_path, token="", opener=api)
+    assert c2.get("/items") == ([1, 2], None)
+    assert c2.requests_made == 1 and c2.cache_hits == 0
+    assert json.loads(page.read_text())["body"] == [1, 2]
+    assert not list(page.parent.glob("*.tmp"))

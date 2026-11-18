@@ -54,9 +54,14 @@ class GitHubClient:
             url = API + url
         cp = self._cache_path(url)
         if cp.exists() and not refresh:
-            self.cache_hits += 1
-            blob = json.loads(cp.read_text())
-            return blob["body"], blob.get("next")
+            try:
+                blob = json.loads(cp.read_text())
+                body, nxt = blob["body"], blob.get("next")
+            except (ValueError, KeyError, TypeError):
+                cp.unlink(missing_ok=True)   # a half-written page from an interrupted run: fetch it again
+            else:
+                self.cache_hits += 1
+                return body, nxt
         if self.remaining == 0:
             raise RateLimited(int(time.time()) + 3600)
         headers = {"Accept": "application/vnd.github+json", "User-Agent": "Revenant"}
@@ -75,7 +80,9 @@ class GitHubClient:
         rem = hdrs.get("X-RateLimit-Remaining")
         self.remaining = int(rem) if rem is not None else None
         nxt = _next_link(hdrs.get("Link"))
-        cp.write_text(json.dumps({"url": url, "fetched": time.time(), "next": nxt, "body": body}))
+        tmp = cp.with_suffix(".tmp")   # write then rename, so an interrupted run never leaves a partial page
+        tmp.write_text(json.dumps({"url": url, "fetched": time.time(), "next": nxt, "body": body}))
+        tmp.replace(cp)
         return body, nxt
 
     def paged(self, path: str, refresh: bool = False) -> Iterator[dict]:
