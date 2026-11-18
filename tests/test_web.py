@@ -226,3 +226,32 @@ def test_overview_asks_in_one_step_and_failures_are_announced(live, monkeypatch)
     status, body, _ = _post(live + "/p/psf/requests-html/ask", b"q=hello", "application/x-www-form-urlencoded")
     assert status == 502
     assert b"role=alert>The s" in body and b"ConnectionError: model server down" in body
+
+
+def test_serve_rejects_a_bad_port_with_a_message():
+    for port in (70000, -5):
+        with pytest.raises(SystemExit) as e:
+            app.serve("127.0.0.1", port)
+        assert "out of range" in str(e.value.code)
+
+
+def test_serve_reports_a_port_that_is_taken():
+    import socket
+    with socket.socket() as busy:
+        busy.bind(("127.0.0.1", 0))
+        busy.listen()
+        with pytest.raises(SystemExit) as e:
+            app.serve("127.0.0.1", busy.getsockname()[1])
+    assert "cannot listen on 127.0.0.1" in str(e.value.code)
+
+
+def test_serve_stops_quietly_on_ctrl_c(monkeypatch, capsys):
+    def interrupt(self, *a, **kw):
+        raise KeyboardInterrupt
+    monkeypatch.setattr(ThreadingHTTPServer, "serve_forever", interrupt)
+    import socket
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        port = s.getsockname()[1]
+    app.serve("127.0.0.1", port)
+    assert "Revenant web stopped" in capsys.readouterr().out

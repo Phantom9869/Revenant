@@ -544,5 +544,16 @@ class Handler(BaseHTTPRequestHandler):
 
 def serve(host: str = "127.0.0.1", port: int | None = None):
     port = int(port or os.environ.get("PORT", 8000))
+    if not 0 < port < 65536:
+        raise SystemExit(f"revenant: port {port} is out of range (1-65535)")
+    try:
+        server = ThreadingHTTPServer((host, port), Handler)
+    except OSError as e:   # address already in use, no permission for a low port, unknown host
+        raise SystemExit(f"revenant: cannot listen on {host}:{port}: {e.strerror or e}") from None
     print(f"Revenant web on http://{host}:{port}", flush=True)
-    ThreadingHTTPServer((host, port), Handler).serve_forever()
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nRevenant web stopped", flush=True)
+    finally:
+        server.server_close()
