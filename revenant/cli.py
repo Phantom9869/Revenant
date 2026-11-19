@@ -103,11 +103,21 @@ def cmd_ask(args):
     p = _patient(args, create=False)
     if not p.db.exists():
         sys.exit(f"No memory for {p.slug}. Run: revenant summon {p.slug}")
+    args.question = args.question.strip()
+    if not args.question:
+        sys.exit("revenant: the question is empty; ask the ghost something")
     try:
         ghost = build_ghost(p, args.model, verify=not args.no_verify)
     except RuntimeError as e:   # e.g. BACKBOARD_API_KEY is not set
         sys.exit(f"revenant: {e}")
-    ans = ghost.ask(args.question)
+    try:
+        ans = ghost.ask(args.question)
+    except urllib.error.HTTPError as e:
+        sys.exit(f"revenant: the model server answered HTTP {e.code} ({e.reason}); is the model pulled or the key valid?")
+    except (OSError, RuntimeError) as e:   # Ollama not running, Backboard out of credit, timeout, ...
+        reason = getattr(e, "reason", e)
+        hint = "" if (args.model or config.GHOST_MODEL).startswith("backboard:") else f"; is Ollama running at {config.OLLAMA_URL}?"
+        sys.exit(f"revenant: the séance was interrupted ({type(e).__name__}: {str(reason)[:200]}){hint}")
     if args.json:
         print(json.dumps({"question": ans.question, "answer": ans.text, "refused": ans.refused,
                           "reason": ans.reason, "sources": ans.sources(), "stripped": ans.stripped,

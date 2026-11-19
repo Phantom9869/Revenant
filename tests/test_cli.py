@@ -87,3 +87,45 @@ def test_autopsy_with_a_clone_gets_past_the_check(monkeypatch):
     import revenant.autopsy as autopsy
     monkeypatch.setattr(autopsy, "run_autopsy", lambda *a, **k: ("# certificate", None, None))
     cli.main(["autopsy", "psf/requests-html", "--offline"])
+
+
+def _remembering_patient():
+    from revenant.config import Patient
+    from revenant.memory.store import Memory
+    p = Patient("psf/requests-html").ensure()
+    Memory(p.db).close()
+
+
+def test_ask_with_a_blank_question_is_a_message():
+    _remembering_patient()
+    with pytest.raises(SystemExit) as e:
+        cli.main(["ask", "psf/requests-html", "   "])
+    assert "question is empty" in str(e.value.code)
+
+
+class _Ghost:
+    def __init__(self, exc):
+        self.exc = exc
+
+    def ask(self, q):
+        raise self.exc
+
+
+def test_ask_when_the_model_server_is_down_is_a_message(monkeypatch):
+    import urllib.error
+    _remembering_patient()
+    monkeypatch.setattr(cli, "build_ghost", lambda *a, **k: _Ghost(urllib.error.URLError(ConnectionRefusedError("refused"))))
+    with pytest.raises(SystemExit) as e:
+        cli.main(["ask", "psf/requests-html", "why did you die?"])
+    msg = str(e.value.code)
+    assert "séance was interrupted" in msg and "Ollama" in msg and "Traceback" not in msg
+
+
+def test_ask_when_the_model_server_answers_http_error_is_a_message(monkeypatch):
+    import urllib.error
+    _remembering_patient()
+    err = urllib.error.HTTPError("http://x/api/chat", 404, "Not Found", {}, None)
+    monkeypatch.setattr(cli, "build_ghost", lambda *a, **k: _Ghost(err))
+    with pytest.raises(SystemExit) as e:
+        cli.main(["ask", "psf/requests-html", "why did you die?"])
+    assert "HTTP 404" in str(e.value.code)
