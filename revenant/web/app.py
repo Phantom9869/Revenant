@@ -10,8 +10,7 @@ import threading
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from .. import config
-from ..config import Patient
+from ..config import Patient, patients
 
 def md_to_html(md: str) -> str:
     """Just enough Markdown for our own reports: headings, lists, tables, code, links."""
@@ -292,13 +291,6 @@ def facts(p: Patient) -> dict:
     return {"autopsy": autopsy, "res": res, "cert_md": cert_md, "last_commit": m and m.group(1),
             "first_commit": first and first.group(1), "causes": causes, "commits": commits and commits.group(1),
             "before": autopsy.get("tally") or (res or {}).get("initial"), "after": (res or {}).get("final")}
-
-
-def patients() -> list[Patient]:
-    root = config.home()
-    if not root.exists():
-        return []
-    return [Patient(d.name.replace("__", "/", 1)) for d in sorted(root.iterdir()) if (d / "ghost.db").exists()]
 
 
 def _arrow(f: dict) -> str:

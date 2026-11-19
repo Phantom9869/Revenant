@@ -234,7 +234,8 @@ Every page works at <http://127.0.0.1:8000>. Asking the ghost needs a model: Oll
 `BACKBOARD_API_KEY` (the Render configuration). Without one, a question gets
 "The séance was interrupted" (a 502).
 
-Data goes to `$REVENANT_HOME` (default `./.revenant`). Commits in the revived fork use
+Data goes to `$REVENANT_HOME` (default `./.revenant`). `revenant list` shows what has been summoned there
+(document counts, and whether each patient has had its autopsy and resurrection; `--json` for scripts). Commits in the revived fork use
 `REVENANT_GIT_NAME` / `REVENANT_GIT_EMAIL` when set.
 
 ## Web UI

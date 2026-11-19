@@ -129,3 +129,42 @@ def test_ask_when_the_model_server_answers_http_error_is_a_message(monkeypatch):
     with pytest.raises(SystemExit) as e:
         cli.main(["ask", "psf/requests-html", "why did you die?"])
     assert "HTTP 404" in str(e.value.code)
+
+
+def _summoned_with(slug, docs=0, autopsy=False, resurrection=False):
+    from revenant.config import Patient
+    from revenant.memory.store import Doc, Memory
+    p = Patient(slug).ensure()
+    m = Memory(p.db)
+    m.add([Doc(id=f"{slug}-{i}", kind="commit", ref=f"abc{i:04d}", title="t", text="x", url="u", author="a", date="2020-01-01")
+           for i in range(docs)])
+    m.close()
+    if autopsy:
+        (p.reports / "death_certificate.md").write_text("# cert")
+    if resurrection:
+        (p.reports / "resurrection.json").write_text("{}")
+
+
+def test_list_with_nothing_summoned_says_how_to_start(capsys):
+    cli.main(["list"])
+    assert "revenant summon owner/name" in capsys.readouterr().out
+
+
+def test_list_shows_each_patient_and_its_rites(capsys):
+    _summoned_with("psf/requests-html", docs=3, autopsy=True, resurrection=True)
+    _summoned_with("pallets/click", docs=1)
+    (cli.config.home() / "stray").mkdir()   # a folder without a ghost.db is not a patient
+    cli.main(["list"])
+    out = capsys.readouterr().out.splitlines()
+    assert len(out) == 2
+    assert out[0].startswith("pallets/click") and "1 documents" in out[0] and out[0].endswith("summoned")
+    assert out[1].startswith("psf/requests-html") and "3 documents" in out[1] and "summoned, autopsy, resurrected" in out[1]
+
+
+def test_list_json(capsys):
+    import json
+    _summoned_with("psf/requests-html", docs=2, autopsy=True)
+    cli.main(["list", "--json"])
+    (row,) = json.loads(capsys.readouterr().out)
+    assert row["repo"] == "psf/requests-html" and row["documents"] == 2
+    assert row["autopsy"] is True and row["resurrection"] is False

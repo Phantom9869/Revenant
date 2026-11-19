@@ -71,3 +71,11 @@ class Patient:
         for p in (self.root, self.cache, self.reports):
             p.mkdir(parents=True, exist_ok=True)
         return self
+
+
+def patients() -> list[Patient]:
+    """Every summoned patient (one with a ghost.db) under the Revenant home, sorted by slug folder."""
+    root = home()
+    if not root.exists():
+        return []
+    return [Patient(d.name.replace("__", "/", 1)) for d in sorted(root.iterdir()) if (d / "ghost.db").exists()]

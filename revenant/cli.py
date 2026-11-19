@@ -246,6 +246,40 @@ def cmd_export(args):
     print(f"exported {p.slug} to {dest}: ghost.db ({size:.1f} MB{', no vectors' if args.no_vectors else ''}), {', '.join(copied)}")
 
 
+def cmd_list(args):
+    """Show what has been summoned under REVENANT_HOME, and which rites have been performed on each."""
+    from .memory.store import Memory
+    found = config.patients()
+    if args.json:
+        rows = []
+        for p in found:
+            m = Memory(p.db)
+            try:
+                rows.append({"repo": p.slug, "documents": sum(m.count().values()), "path": str(p.root),
+                             "autopsy": (p.reports / "death_certificate.md").exists(),
+                             "resurrection": (p.reports / "resurrection.json").exists()})
+            finally:
+                m.close()
+        print(json.dumps(rows, indent=2))
+        return
+    if not found:
+        print(f"No patients under {config.home()}. Run: revenant summon owner/name")
+        return
+    width = max(len(p.slug) for p in found)
+    for p in found:
+        m = Memory(p.db)
+        try:
+            docs = sum(m.count().values())
+        finally:
+            m.close()
+        rites = ["summoned"]
+        if (p.reports / "death_certificate.md").exists():
+            rites.append("autopsy")
+        if (p.reports / "resurrection.json").exists():
+            rites.append("resurrected")
+        print(f"{p.slug:<{width}}  {docs:>6,} documents  {', '.join(rites)}")
+
+
 def cmd_serve(args):
     from .web.app import serve
     serve(args.host, args.port)
@@ -295,6 +329,10 @@ def main(argv=None):
     s.add_argument("--to", required=True, metavar="DIR", help="folder to use as REVENANT_HOME on the server")
     s.add_argument("--no-vectors", action="store_true", help="drop embeddings (the server will use keyword retrieval)")
     s.set_defaults(fn=cmd_export)
+
+    s = sub.add_parser("list", help="list the repos you have summoned and which rites each has had")
+    s.add_argument("--json", action="store_true")
+    s.set_defaults(fn=cmd_list)
 
     s = sub.add_parser("serve", help="small web UI for summoned patients")
     s.add_argument("--host", default="127.0.0.1")
