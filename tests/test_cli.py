@@ -69,3 +69,21 @@ def test_summon_offline_is_a_message(monkeypatch):
     with pytest.raises(SystemExit) as e:
         cli.main(["summon", "o/r"])
     assert "could not reach" in str(e.value.code) and "--no-github" in str(e.value.code)
+
+
+@pytest.mark.parametrize("cmd", ["autopsy", "resurrect"])
+def test_autopsy_and_resurrect_without_a_clone_say_how_to_summon_and_create_nothing(cmd, tmp_path):
+    with pytest.raises(SystemExit) as e:
+        cli.main([cmd, "psf/requests-html"])
+    msg = str(e.value.code)
+    assert "revenant summon psf/requests-html" in msg and "Traceback" not in msg
+    assert not (tmp_path / "home").exists()
+
+
+def test_autopsy_with_a_clone_gets_past_the_check(monkeypatch):
+    from revenant.config import Patient
+    p = Patient("psf/requests-html").ensure()
+    (p.clone / ".git").mkdir(parents=True)
+    import revenant.autopsy as autopsy
+    monkeypatch.setattr(autopsy, "run_autopsy", lambda *a, **k: ("# certificate", None, None))
+    cli.main(["autopsy", "psf/requests-html", "--offline"])

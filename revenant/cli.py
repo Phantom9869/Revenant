@@ -25,6 +25,14 @@ def _patient(args, create: bool = True) -> Patient:
     return p.ensure() if create else p
 
 
+def _summoned(args) -> Patient:
+    """The patient for a command that works on an existing clone; says how to summon it and creates nothing."""
+    p = _patient(args, create=False)
+    if not (p.clone / ".git").exists():
+        sys.exit(f"No clone for {p.slug}. Run: revenant summon {p.slug}")
+    return p.ensure()
+
+
 def cmd_summon(args):
     try:
         _summon(args)
@@ -139,7 +147,7 @@ def cmd_ask(args):
 def cmd_autopsy(args):
     from .autopsy import run_autopsy
     from .memory.store import Memory
-    p = _patient(args)
+    p = _summoned(args)
     mem = Memory(p.db) if p.db.exists() else None
     md, exam, _ = run_autopsy(p, mem, args.python, check_web=not args.offline)
     print(md)
@@ -151,7 +159,7 @@ def cmd_resurrect(args):
     from .models import OllamaClient
     from .report import resurrection_log
     from .resurrect import commit, resurrect
-    p = _patient(args)
+    p = _summoned(args)
     from .integrations import tracing
     from .models import Metered, get_chat_model
     if args.surgeon == "none":
